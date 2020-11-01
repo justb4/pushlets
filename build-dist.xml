@@ -1,0 +1,52 @@
+<!--
+
+Build file for Pushlet distribution products.
+
+$Id: build-dist.xml,v 1.6 2010/02/05 13:13:19 justb Exp $
+
+-->
+<project name="pushlet-distro" default="package" basedir=".">
+
+	<!-- Initialization of properties (dirs, files) -->
+
+	<!-- Project global properties, overrule by modifying build.properties -->
+	<property file="build.properties"/>
+
+	<!-- File and directory locations -->
+	<property name="home" value="${basedir}"/>
+	<property name="dist.dir" value="${home}/../../dist"/>
+	<property name="versions.dir" value="${home}/../../versions"/>
+	<property name="versions.zip.file" value="${versions.dir}/${project.id}-${project.version}.zip"/>
+	<property name="versions.tar.file" value="${versions.dir}/${project.id}-${project.version}.tar"/>
+	<property name="versions.gzip.file" value="${versions.tar.file}.gz"/>
+
+	<target name="build" >
+		<echo message="Building distribution"/>
+
+		<ant antfile="build.xml" inheritall="false" target="clean"/>
+		<ant antfile="build.xml" inheritall="false" target="war"/>
+		<ant antfile="xdoc/build.xml" inheritall="false" target="doc"/>
+	</target>
+
+	<target name="package" depends="build" >
+		<echo message="Packaging distribution"/>
+
+		<delete dir="${dist.dir}" />
+		<mkdir dir="${dist.dir}" />
+
+		<copy todir="${dist.dir}/${project.id}-${project.version}">
+			<fileset dir="${home}"
+				includes="*.txt,build.*,client/**,doc/**,lib/**,src/**,thirdparty/sun/servlet-2.3/**,thirdparty/apache/log4j-1.2.14/**,webapps/pushlet/**,webapps/pushlet.war"/>
+		</copy>
+
+		<delete file="${versions.zip.file}" />
+		<zip zipfile="${versions.zip.file}" basedir="${dist.dir}" />
+
+		<delete file="${versions.gzip.file}" />
+		<tar tarfile="${versions.tar.file}" basedir="${dist.dir}"/>
+		<gzip zipfile="${versions.gzip.file}" src="${versions.tar.file}"/>
+		<delete file="${versions.tar.file}" />
+
+	</target>
+
+</project>

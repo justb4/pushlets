@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page SYSTEM "nl/justobjects/xbook/rsc/dtd/page.dtd" >
+<page>
+ <info>
+  <title>Contact</title>
+  <id>$Id: contact.xml,v 1.5 2005/03/02 10:35:00 justb Exp $</id>
+  <author>
+   <name>Just van den Broecke</name>
+   <email>just[AT]justobjects.nl</email>
+  </author>
+  <date></date>
+ </info>
+ <content>
+ <image href="assets/just.jpg" />
+ <para>
+   The author of Pushlets and this site is
+	 <link href="mailto:just[AT]justobjects.nl">Just van den Broecke</link>.
+ </para>
+ <para>
+Please find the contact information and more, e.g.
+	 if you want to hire me ;-) on the site of
+<link href="http://www.justobjects.nl" target="_new">Just Objects B.V.</link>
+ </para>
+	 <para>
+		 Just also attempts to maintain <link href="http://www.justobjects.org/blog" target="_new">a weblog on technology explorations
+		 and his projects.</link>
+	 </para>
+ </content>
+ </page>
+

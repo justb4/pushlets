@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE doc SYSTEM "nl/justobjects/xbook/rsc/dtd/doc.dtd" >
+<doc>
+	<front>
+		<title>Pushlets - Cookbook</title>
+		<id>$Id: cookbook.xml,v 1.11 2007/12/04 13:55:54 justb Exp $</id>
+		<author>
+			<name>Just van den Broecke</name>
+			<organization>Just Objects B.V.</organization>
+			<email>just[AT]justobjects.nl</email>
+		</author>
+		<date>$Date: 2007/12/04 13:55:54 $</date>
+		<abstract>
+			This document provides a development guide. WORK IN PROGRESS....
+		</abstract>
+	</front>
+	<middle>
+
+
+		<section1 title="Application Development">
+			<para>
+				The Pushlet framework is basically a message exchange.
+				One part of your application
+				will be dealing with generating
+				and sending messages (called Events) to the framework,
+				the other part (usually the browser) will be receiving
+				messages. The new (v2) protocol also allows
+				clients to both publish and subscribe to events.
+				The common two tasks for application development
+				involve (1) creating the
+				message sources and (2) developing the receivers.
+				As we shall see the Pushlet
+				framework has various possibilities
+				in order to develop senders and receivers.
+				Since interfacing may even be done entirely
+				through HTTP (and XML) you may develop an
+				application in any programming/scripting language
+				that supports HTTP.
+			</para>
+
+
+			<section2 title="Events">
+				<para>
+					The message should adhere to<code>/src/nl/justobjects/pushlet/core/Event.java</code>.
+					Currently Event is a flat message with a topic identifier
+					called the<code>p_subject</code>.
+					Dependent on the client technology different encodings are applied
+					to transfer Event, the main two being JavaScript and XML.
+				</para>
+			</section2>
+
+			<section2 title="Developing Senders">
+				<para>There are three possibilities to send events to the Pushlet framework:
+					remotely using the Pushlet protocol or locally, using EventSource
+					or directly to the Dispatcher class.
+					Each is discussed next.
+				</para>
+				<section3 title="Direct Publishing (local)">
+					<para>
+						Your application may directly publish Events by using
+						<code>/src/nl/justobjects/pushlet/core/Dispatcher.getInstance().java</code>.
+						Since Dispatcher
+						is (currently) a Singleton, sending the Event is a matter of
+						calling<code>Dispatcher.getInstance().multicast()/unicast()/broadcast()</code>.
+					</para>
+					<para>
+						The other two methods (EventSource and Pushlet protocol) will eventually call
+						<code>Dispatcher.getInstance().multicast()/unicast()/broadcast()</code>.
+					</para>
+					<para>
+						Note that in order to call
+						<code>Dispatcher.getInstance().multicast()/unicast()/broadcast()</code>,
+						your class needs to be
+						in the same classloader as the Dispatcher.getInstance(). This may be an issue
+						when for example your sender is
+						in another web application. You may use the Pushlet protocol
+						in that case or put pushlet.jar on the system
+						CLASSPATH. In Tomcat you can also make pushlet.jar a shared library.
+					</para>
+				</section3>
+				<section3 title="Using EventSource">
+					<para>
+						An EventSource is an object that is managed (activated/passivated)
+						by the Pushlet framework.
+						Developing your own EventSource involves
+
+						creating a class that implements
+						<code>nl.justobjects.pushlet.core.EventSource</code>
+						(when your EventSource
+						pushes Events to the framework)
+						or that extends
+						<code>nl.justobjects.pushlet.core.EventPullSource</code>
+						(when the framework should
+						pull your EventSource at dedicated intervals) and adding
+						your EventSource to a properties file aptly named<code>sources.properties</code>.
+					</para>
+					<para>
+						See
+						<code>/webapps/pushlet/WEB-INF/classes/sources.properties</code>
+						for an example. This file
+						specifies which EventSource objects need
+						to be created and managed. Note: since v2.0.3
+						<code>sources.properties</code>
+						can also be placed
+						under WEB-INF.
+						See
+						<code>/src/nl/justobjects/pushlet/core/EventSourceManager.java</code>
+						how this is done. See examples
+						in
+						<code>/src/nl/justobjects/pushlet/test/TestEventPullSources</code>
+						where several example
+						sources are bundled.
+					</para>
+					<para>
+						During initialization the
+						<code>EventSourceManager</code>
+						will look for the
+						file
+						<code>sources.properties</code>
+						in the CLASSPATH. Usually this file
+						will be put under WEB-INF/classes.
+					</para>
+				</section3>
+				<section3 title="Using the Pushlet protocol">
+					<para>
+
+						The Chat and WebPresentation examples use the remote
+						publication of events
+						through the Pushlet (control) protocol. In a webapp the Pushlet JS API provides
+						a p_publish() method through which your app may send events.
+
+					</para>
+					<para>
+						The
+						<code>/src/nl/justobjects/pushlet/test/PushletPingApplication.java</code>
+						provides a complete example illustrating sending and receiving Events and
+						using<code>/src/nl/justobjects/pushlet/client/PushletClient.java</code>.
+						DHTML clients may use the JavaScript pushlet library.
+					</para>
+				</section3>
+
+			</section2>
+			<section2 title="Developing Receivers">
+				<section3 title="The Pushlet Request">
+					<para>Any client that wants to receive Events will make a
+
+						HTTP request to the Pushlet servlet.
+						This request requires at least two parameters: (1) the encoded Event format
+						<code>format=js|xml|ser|xml-strict</code>
+						where "js" is JavaScript, "xml" is XML, "ser" is Java serialized objects, "xml-strict" is like
+						"xml" but events
+						are contained in a complete document and
+						(2) the
+						<code>subject</code>
+						(like a JMS topic). Note that subjects form a hierarchical tree naming space, i.e. specifying
+						one level will subscribe to all subjects below. If you specify "/"
+						all Events are received.
+					</para>
+				</section3>
+				<section3 title="Using Pull Mode">
+					<para>
+						The Pushlet servlet is the standard servlet used to receive Events.
+						A Pushlet will basically
+						send a stream of encoded Events as specified by the
+						<code>p_format</code>
+						parameter.
+						In some cases (proxies, some servlet engines or browsers) the
+						Pushlet may not be working
+						properly. In that case the pull mode may be used.
+
+						In pull mode the Pushlet servlet will send one or more Events
+						and request the client to refresh the page.
+						The client refreshes the page each time an event is received,
+						but the request remains outstanding
+						thus pull mode is more efficient than polling.
+
+						For JavaScript clients it is transparent whether a
+						"stream", "pull" or "poll" mode is active.
+						Other clients (e.g. Java XML-based clients) should merely obey the
+						protocol "refresh" event.
+					</para>
+
+				</section3>
+				<section3 title="Using DHTML Clients">
+					<para>
+						A DHTML client receives Events encoded as JavaScript callbacks.
+						See most of the examples and the whitepaper how this is done.
+						The simplest example is the temperature display.
+						See<code>webapps/pushlet/examples/weather/nl-temperature.html</code>.
+
+					</para>
+					<para>
+						The JavaScript library
+						<code>webapps/pushlet/lib/js-pushlet-client.js</code>
+						provides an API that allows your app to access all services
+						of the pushlet protocol. All API methods are named p_*().
+
+					</para>
+				</section3>
+
+				<section3 title="Using AJAX Clients">
+					<para>
+						Since version 2.0.2 AJAX clients can be developed using the
+						library
+						<code>webapps/pushlet/lib/ajax-pushlet-client.js</code>
+						See for example<code>webapps/pushlet/examples/chat</code>. The first
+						version of the AJAX library is forward compatible with
+						<code>webapps/pushlet/lib/js-pushlet-client.js</code>
+						so if you have existing apps you may simply replace this library and remove the<code>
+						p_embed()</code>statement.
+					</para>
+					<p>
+						TO BE FINALIZED...
+					</p>
+				</section3>
+
+				<section3 title="Using XML Clients">
+					<para>
+						Any client that can receive XML over HTTP can be used. The Java Pushlet client
+						(see<code>/src/nl/justobjects/pushlet/client/PushletClient.java</code>) uses
+						the XML format, decoding incoming XML into Event objects.
+					</para>
+					<para>
+						If format is "xml" then Events are streamed as &lt;event&gt; elements.
+						If format is "xml-strict" then &lt;event&gt; elements are contained in a &lt;pushlet&gt;
+						element. The latter is applicable for "pull-mode" in AJAX clients (that require to receive a
+						complete XML document).
+
+					</para>
+				</section3>
+
+				<section3 title="J2ME Clients">
+					<para>
+						See<code>client/j2me</code>.
+					</para>
+				</section3>
+			</section2>
+
+			<section2 title="Integrating Pushlets in your WebApp">
+				<para>
+					Although you can develop with Pushlets by using and or
+					modifying the standard web application<code>pushlet.war</code>, there
+					may be cases where you want to integrate Pushlets in your
+					own web application. Below are the steps for doing just that.
+					We'll see which files are needed, where to place them and
+					what minor modifications need to be done.
+				</para>
+				<section3 title="Required Files">
+					<para>Very few files from the standard
+						Pushlet distribution
+						are required to get up and running. These are listed
+						below with their path relative to the top directory
+						of your unpacked distribution
+						i.e.
+						<code>pushlet-x.y.z/webapps/pushlet</code>
+
+					</para>
+					<sequence>
+						<step>jar file:
+							<code>WEB-INF/lib/pushlet.jar</code>
+						</step>
+						<step>config files:
+							<code>WEB-INF/classes/pushlet.properties</code>
+							and optionally
+							(if you develop event sources)
+							<code>WEB-INF/classes/sources.properties</code>
+						</step>
+						<step>client libraries:
+							<code>lib/js-pushlet-client.js</code>
+							and
+							<code>lib/js-pushlet-net.html</code>
+							for JavaScript clients. Only if you use applet or
+							WebStart Java clients you 'll need
+							<code>lib/pushletclient.jar</code>
+						</step>
+						<step>web config file:
+							<code>WEB-INF/web.xml</code>
+							in order to embed
+							the pushlet servlet in your webapp
+						</step>
+					</sequence>
+					<para>
+						That's it. You may use (parts of) the
+						<code>examples</code>
+						and
+						<code>assets</code>
+						directories
+						for testing or as a starting point for your application but only the above four categories are
+						required.
+
+						A bare minimum thus are 5 files (<code>pushlet.jar</code>,<code>pushlet.properties</code>,<code>
+						js-pushlet-client.js</code>,
+						<code>js-pushlet-net.html</code>
+						and
+						<code>web.xml</code>
+					</para>
+					<para>
+						Note: since v2.0.3
+						<code>pushlet.properties</code>
+						can also be placed
+						under WEB-INF. At startup the CLASSPATH is searched first followed by
+						<code>WEB-INF/pushlet.properties.</code>
+					</para>
+				</section3>
+
+				<section3 title="Placing the Files">
+					<para>You need to place the files listed above
+						in exactly the same directories in your webapp. The exception is
+						<code>web.xml</code>
+						as your webapp will also need your own<code>web.xml</code>. See next.
+					</para>
+				</section3>
+
+				<section3 title="Modifications">
+					<para>Assuming your webapp has its own
+						<code>WEB-INF/web.xml</code>
+						you will need to copy/paste the entire Pushlet
+						<code>&lt;servlet&gt;</code>
+						and
+						<code>&lt;servlet-mapping&gt;</code>
+						XML elements from the Pushlet
+						<code>web.xml</code>.
+					</para>
+					<para>
+						The next step is to decide whether your application is going to use
+						Event sources. If not you won't need
+						<code>sources.properties</code>
+						but
+						you will need to disable Event sources in<code>pushlet.properties</code>.
+						The line to change is
+						<as-is>
+							sources.activate=true
+						</as-is>
+						to
+						<as-is>
+							sources.activate=false
+						</as-is>
+					</para>
+					<para>
+						In order to verify test I usually take one of the example files like
+						<code>examples/raw/raw.html</code>
+						to test if connectivity is working.
+					</para>
+					<para>
+						That's it ! If you integrate Pushlets in your webapp you may next
+						also extend core classes, so read on.
+					</para>
+				</section3>
+
+			</section2>
+
+			<section2 title="Advanced: Extending Pushlets">
+				<para>
+					Your application may have specific requirements that may not be covered
+					by the basic Pushlet framework. You may extend core classes (v2.0.3+)
+					of the framework without modifying the core classes. This can be
+					achieved by extending (through inheritance) the main core classes
+					and declaring your extended classes in<code>pushlet.properties</code>.
+					For example, if you need to extend
+					<code>SessionManager</code>
+					for authorization
+					purposes you may declare your
+					<code>com.mine.ExtSessionManager</code>
+					class in
+					<code>pushlet.properties</code>
+					through<code>sessionmanager.class=com.mine.ExtSessionManager</code>.
+					At runtime the main core classes are created (factory method pattern) using
+					the classes declared in<code>pushlet.properties</code>. Note that
+					you should be maintaining the semantics of the framework. In many cases
+					you can intercept method calls by calling
+					<code>super.method()</code>
+					before/after your
+					specific code. The following classes may be extended:
+				</para>
+				<listing>
+					nl.justobjects.pushlet.core.Controller
+					nl.justobjects.pushlet.core.Dispatcher
+					nl.justobjects.pushlet.core.SessionManager
+					nl.justobjects.pushlet.core.Session
+					nl.justobjects.pushlet.core.Subscriber
+					nl.justobjects.pushlet.core.Subscription
+					nl.justobjects.pushlet.util.DefaultLogger
+				</listing>
+				<para>
+
+					Some examples are presented next. First the problem/issue is presented, then a hint at a possible
+					solution through extension.
+				</para>
+				<section3 title="Caching Events">
+					<para>
+						<strong>Problem:</strong>
+						when a client subscribes to a subject you may want to send the current state
+						first and then send updates. For example, a table of stock rates need to be filled first
+						before receiving rate changes.
+					</para>
+					<para>
+						<strong>Solution:</strong>
+						override the classes Dispatcher and Subscriber.
+						Your
+						<code>Dispatcher.multicast()</code>
+						may store Events in a HashMap keyed by stock name before
+						calling<code>super.multicast()</code>.
+						Your
+						<code>Subscriber.addSubscription()</code>
+						may send the content
+						of the HashMap of stock rates to the subscribing client before calling
+						<code>super.addSubscription()</code>
+					</para>
+					<para>
+						Caching is often application-specific. In other cases, e.g. a chat you may
+						want to cache the last N events using a List.
+					</para>
+				</section3>
+				<section3 title="Notify on Subscribe/Unsubscribe">
+					<para>
+						<strong>Problem:</strong>
+						Your application needs notification when clients subscribe or unsubscribe to/from
+						subjects.
+					</para>
+					<para>
+						<strong>Solution:</strong>
+						override the class Subscriber and override all methods dealing with subscription:
+						<code>Subscriber.add/removeSubscription(s)</code>
+						Call
+						<code>super.</code>
+						first and then publish a custom Event through the Dispatcher.
+					</para>
+				</section3>
+				<section3 title="Only Publish Events When There Are Active Subscribers">
+					<para>
+						<strong>Problem:</strong>
+						Your application only needs to send events when there are listeners
+						for the topic.
+					</para>
+					<para>
+						<strong>Solution:</strong>
+						override the class Subscriber and keep a map of "active topics"
+						by intercepting all
+						<code>Subscriber.add/removeSubscription(s)</code>
+						methods. Then locally or remotely your app may fetch the list (or even a boolean)
+						to determine if the Event needs to be published.
+					</para>
+				</section3>
+				<section3 title="Custom Logging">
+					<para>
+						<strong>Problem:</strong>
+						You want to use a specific
+						logging library like<code>log4j</code>.
+					</para>
+					<para>
+						<strong>Solution:</strong>
+						override the class
+						<code>nl.justobjects.pushlet.util.DefaultLogger</code>
+						using
+						the property
+						<code>logger.class</code>
+						providing a custom logger class
+						that calls your specific logging library.
+					</para>
+				</section3>
+				<section3 title="Event Throttling">
+					<para>
+						<strong>Problem:</strong>
+						You don't want to push all events to each subscriber. Some subscribers
+						may have a paid account.
+					</para>
+					<para>
+						<strong>Solution:</strong>
+						override the class Subscriber and determine there if a Subscriber
+						needs to receive all events. You may authorize clients by using a custom
+						<code>SessionManager</code>
+						(see above).
+					</para>
+				</section3>
+			</section2>
+		</section1>
+
+
+	</middle>
+</doc>
+
+
+
+

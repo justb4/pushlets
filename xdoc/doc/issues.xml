@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page SYSTEM "nl/justobjects/xbook/rsc/dtd/page.dtd" >
+<page>
+ <info>
+  <title>Bugs and Features</title>
+  <id>$Id: issues.xml,v 1.7 2005/03/02 09:48:27 justb Exp $</id>
+  <author>
+   <name>Just van den Broecke</name>
+   <email>just[AT]justobjects.nl</email>
+  </author>
+  <date>$Date: 2005/03/02 09:48:27 $</date>
+ </info>
+ <content>
+
+ <para>
+	 Please use the <link href="http://sourceforge.net/projects/pushlets" target="_top">SourceForge Pushlets Project Page</link>
+	 to browse and report bugs or add feature requests.
+ </para>
+
+
+</content>
+</page>

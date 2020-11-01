@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page SYSTEM "nl/justobjects/xbook/rsc/dtd/page.dtd" >
+<page>
+	<info>
+		<title>Download</title>
+		<id>$Id: download.xml,v 1.7 2005/02/28 14:31:20 justb Exp $</id>
+		<author>
+			<name>Just van den Broecke</name>
+			<email>just[AT]justobjects.nl</email>
+		</author>
+		<date>$Date: 2005/02/28 14:31:20 $</date>
+	</info>
+	<content>
+		<para>
+			See
+			<link href="version.html">version.html</link> for what is in each version.
+			Each download has sources, documentation, binaries and a webapp (.war file) with ready-to-use examples.
+		</para>
+		<para>
+			<strong>All official downloads can be done from SourceForge.
+				<break/>
+				<link href="http://sourceforge.net/project/showfiles.php?group_id=62939" target="_top">CLICK HERE FOR DOWNLOADS</link>
+			</strong>
+		</para>
+		<para>
+			<strong>Unofficial/preview downloads:
+				<break/>
+				<link href="http://www.justobjects.org/download/pushlet">CLICK HERE FOR PREVIEW DOWNLOADS</link>
+			</strong>
+		</para>
+	</content>
+</page>

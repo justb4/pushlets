@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page SYSTEM "nl/justobjects/xbook/rsc/dtd/page.dtd" >
+<page>
+ <info>
+  <title>Pushlets - Documentation</title>
+  <id>$Id: dist-main.xml,v 1.9 2006/05/25 11:20:26 justb Exp $</id>
+  <author>
+   <name>Just van den Broecke</name>
+   <email>just[AT]justobjects.nl</email>
+  </author>
+  <date>$Date: 2006/05/25 11:20:26 $</date>
+ </info>
+ <content>
+<para>
+This contains all documentation for the Pushlets distribution.
+See <link href="http://www.pushlets.com" target="_new">www.pushlets.com</link> for latest news/versions.
+Read <link href="doc/whitepaper.html">this whitepaper</link> to
+get a first idea of the why, what and how. Additionally, you may want to read
+my <link href="https://www.infoworld.com/article/2076063/pushlets--send-events-from-servlets-to-dhtml-client-browsers.html" target="_new">JavaWorld article on Pushlets</link>.
+</para>
+<para>
+Many other references can be found on the web (e.g. try a search on "pushlets" on Google).
+In print
+<link href="http://www.wrox.com/Consumer/Store/Details.asp?ISBN=1861003625" target="_new">
+"Professional JSP" (Wrox Press 1th ed.) </link>devotes text to Pushlets starting on page 610.
+</para>
+
+<section1 title="What's New ?">
+
+See <link href="http://www.pushlets.com" target="_new">www.pushlets.com</link> for latest news/versions.
+</section1>
+
+<section1 title="Discussion">
+<para>
+There is a Pushlet discussion list at YahooGroups, so that your opinions can be shared.
+I will forward some of the private email responses I've gotten to that list.
+<link href="doc/discussion.html">Click here </link> to go to the discussion page.
+</para>
+<xhtml>
+<A href="http://sourceforge.net" target="_top">
+ <IMG src="http://sourceforge.net/sflogo.php?group_id=62939&amp;type=5" width="110" height="31" border="0" alt="SourceForge Logo" />
+</A>
+</xhtml>
+
+</section1>
+
+ </content>
+</page>
+
+
+
+
+

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="37"
+   name=""
+   committed-date="2006-09-11T10:35:46.625998Z"
+   url="svn+ssh://just@svn.geotracing.codehaus.org/geotracing/base/trunk/server/webapp/site/presentation/ui/i18n"
+   last-author="just"
+   kind="dir"
+   repos="svn+ssh://just@svn.geotracing.codehaus.org/geotracing"
+   revision="37"/>
+<entry
+   committed-rev="37"
+   name="s5-core.css"
+   text-time="2006-08-28T15:38:19.000000Z"
+   committed-date="2006-09-11T10:35:46.625998Z"
+   checksum="d19b9c5a99f08670db9040578e83fddf"
+   last-author="just"
+   kind="file"/>
+<entry
+   committed-rev="37"
+   name="bg-slide.jpg"
+   text-time="2006-08-28T15:38:19.000000Z"
+   committed-date="2006-09-11T10:35:46.625998Z"
+   checksum="fdcb151b8e7282773e9b4c0b6e52e431"
+   last-author="just"
+   kind="file"
+   prop-time="2006-09-11T10:34:39.000000Z"/>
+<entry
+   committed-rev="37"
+   name="framing.css"
+   text-time="2006-08-28T15:38:19.000000Z"
+   committed-date="2006-09-11T10:35:46.625998Z"
+   checksum="eb4acbcd3126d0100b39db04c85848e6"
+   last-author="just"
+   kind="file"/>
+<entry
+   committed-rev="37"
+   name="slides.css"
+   text-time="2006-08-28T15:38:19.000000Z"
+   committed-date="2006-09-11T10:35:46.625998Z"
+   checksum="49fad08b2baaa895d85f78c48dca5427"
+   last-author="just"
+   kind="file"/>
+<entry
+   committed-rev="37"
+   name="bg-shade.png"
+   text-time="2006-08-28T15:38:19.000000Z"
+   committed-date="2006-09-11T10:35:46.625998Z"
+   checksum="9453a69a5e37bf5e43972a26f0036b59"
+   last-author="just"
+   kind="file"
+   prop-time="2006-09-11T10:34:39.000000Z"/>
+<entry
+   committed-rev="37"
+   name="00_head.txt"
+   text-time="2006-08-28T15:38:19.000000Z"
+   committed-date="2006-09-11T10:35:46.625998Z"
+   checksum="3662d9b0024e27c7d9b8f967d50153ff"
+   last-author="just"
+   kind="file"
+   prop-time="2006-09-11T10:34:39.000000Z"/>
+<entry
+   committed-rev="37"
+   name="pretty.css"
+   text-time="2006-08-28T15:38:19.000000Z"
+   committed-date="2006-09-11T10:35:46.625998Z"
+   checksum="5b7e8f1dc1882b7ab611cfadc436d17e"
+   last-author="just"
+   kind="file"/>
+</wc-entries>

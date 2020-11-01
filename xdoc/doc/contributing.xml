@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page SYSTEM "nl/justobjects/xbook/rsc/dtd/page.dtd" >
+<page>
+ <info>
+  <title>Contributing</title>
+  <id>$Id: contributing.xml,v 1.4 2005/03/02 15:27:22 justb Exp $</id>
+  <author>
+   <name>Just van den Broecke</name>
+   <email>just[AT]justobjects.nl</email>
+  </author>
+  <date></date>
+ </info>
+ <content>
+
+<para>
+Pushlet development repositories (CVS, downloads etc) are on Sourceforge.
+See <link href="http://sourceforge.net/projects/pushlets/" target="_top">sourceforge.net/projects/pushlets</link>
+</para>
+<para>
+If you are interested in contributing contact me at
+<link href="mailto:just[AT]justobjects.nl">just[AT]justobjects.nl</link>.
+</para>
+</content>
+</page>

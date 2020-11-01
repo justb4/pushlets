@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE xbook SYSTEM "nl/justobjects/xbook/rsc/dtd/xbook.dtd">
+
+<xbook titleImage="assets/pushlet-logo.gif" title="Pushlets" bgColor="#001E32" fgColor="white" default="dist-main.xml">
+
+	<document label="home" desc="Main" src="dist-main.xml"/>
+	<document label="contact" desc="Contact" src="doc/contact.xml"/>
+	<external label="license" url="doc/license.html" desc="contact" copy="y"/>
+
+	<!-- STATUS -->
+	<folder label="status" desc="status">
+		<document label="roadmap" desc="roadmap" src="doc/roadmap.xml"/>
+		<document label="issues" desc="issues" src="doc/issues.xml"/>
+		<external label="versions" url="doc/version.html" desc="version info" copy="y"/>
+		<document label="compatibility" desc="compatibility" src="doc/compatibility.xml"/>
+	</folder>
+
+	<!-- DOCUMENTATION -->
+	<folder label="documentation" desc="document">
+		<document label="whitepaper" desc="Whitepaper" src="doc/whitepaper.xml"/>
+		<document label="install" desc="Install Guide" src="doc/installation.xml"/>
+		<document label="cookbook" desc="Dev Guide" src="doc/cookbook.xml"/>
+		<document label="protocol" desc="Protocol Spec" src="doc/protocol.xml"/>
+		<external label="api" url="api/index.html" desc="JavaDoc" target="api"/>
+	</folder>
+
+	<!-- SOURCES -->
+	<folder label="sources" desc="source browse">
+		<external label="java2html" url="src/index.html" target="src" desc="Java Sources"/>
+		<external label="viewcvs" url="http://pushlets.cvs.sourceforge.net/pushlets/pushlets" target="src" desc="CVS Sources"/>
+	</folder>
+
+	<!-- GET INVOLVED -->
+	<folder label="get involved" desc="get involved">
+		<document label="discussion" desc="discussion" src="doc/discussion.xml"/>
+		<document label="contributing" desc="discussion" src="doc/contributing.xml"/>
+	</folder>
+
+</xbook>

@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page SYSTEM "nl/justobjects/xbook/rsc/dtd/page.dtd" >
+<page>
+	<info>
+		<title>Compatibility</title>
+		<id>$Id: compatibility.xml,v 1.4 2009/04/08 10:42:54 justb Exp $</id>
+		<author>
+			<name>Just van den Broecke</name>
+			<email>just[AT]justobjects.nl</email>
+		</author>
+		<date></date>
+	</info>
+	<content>
+		<para>
+			This page lists compatibility of Pushlets
+			with both browsers and servers. Last update:$Date: 2009/04/08 10:42:54 $
+		</para>
+		<section2 title="Browser Compatibility">
+			<para>
+				In theory Pushlets should work in all modern browsers.
+				However there may be incompatibilities, plus I don't have the resources to test all combinations
+				of browsers/(minor)versions/platforms. I will keep a list here for what I've found thus far.
+				<link href="mailto:just AT justobjects.nl">Let me know</link>
+				if something did (not) work on your browser.
+				To help me in filling this table try the
+				<link href="/pushlet/examples/ping/ping.html" target="_new">Pushlet Ping</link>
+				to see if it works in your browser.
+			</para>
+			<para>
+				Note: Netscape
+				was reported to work on many other Unixes (HP, Irix etc) besides Linux.
+				Besides the table below I also generate a
+				<link href="../pushlet-ping-list.txt">raw browser list of successful pings</link>
+			</para>
+			<table1 border="true">
+				<row>
+					<cell>
+						<bold>Browser/version</bold>
+					</cell>
+					<cell>
+						<bold>Win32</bold>
+					</cell>
+					<cell>
+						<bold>Linux</bold>
+					</cell>
+					<cell>
+						<bold>MacOSX</bold>
+					</cell>
+					<cell>
+						<bold>Remarks</bold>
+					</cell>
+				</row>
+
+				<row>
+					<cell>NS4.05/07</cell>
+					<cell>Ok</cell>
+					<cell>?</cell>
+					<cell>Ok</cell>
+					<cell>-</cell>
+				</row>
+
+				<row>
+					<cell>NS4.5</cell>
+					<cell>Ok</cell>
+					<cell>?</cell>
+					<cell>?</cell>
+					<cell>-</cell>
+				</row>
+
+				<row>
+					<cell>NS4.51</cell>
+					<cell>Ok</cell>
+					<cell>Ok?</cell>
+					<cell>Ok?</cell>
+					<cell>-</cell>
+				</row>
+
+				<row>
+					<cell>NS4.6</cell>
+					<cell>?</cell>
+					<cell>Ok</cell>
+					<cell>?</cell>
+					<cell>-</cell>
+				</row>
+
+				<row>
+					<cell>NS4.61</cell>
+					<cell>Ok</cell>
+					<cell>?</cell>
+					<cell>Ok</cell>
+					<cell>-</cell>
+				</row>
+
+				<row>
+					<cell>NS4.7</cell>
+					<cell>Ok</cell>
+					<cell>Ok*</cell>
+					<cell>?</cell>
+					<cell>-</cell>
+				</row>
+
+				<row>
+					<cell>NS5</cell>
+					<cell>Ok?</cell>
+					<cell>?</cell>
+					<cell>?</cell>
+					<cell>Mozilla M10 worked on Win98 (reported by Michael Classen)</cell>
+				</row>
+
+				<row>
+					<cell>NS6PR1</cell>
+					<cell>Not ok</cell>
+					<cell>?</cell>
+					<cell>?</cell>
+					<cell>Brad Casner reported not ok for Win98</cell>
+				</row>
+
+				<row>
+					<cell>IE4.0</cell>
+					<cell>-</cell>
+					<cell>N.A.</cell>
+					<cell>?</cell>
+					<cell>This version seems to be buggy in all respects!</cell>
+				</row>
+
+				<row>
+					<cell>IE4.01</cell>
+					<cell>Ok</cell>
+					<cell>N.A.</cell>
+					<cell>Ok*</cell>
+					<cell>Seems to miss first event sometimes. Michael Classen reported that IE4.01 and 4.5 worked
+						on Mac PPC (iBook). See next line for what I found out.
+					</cell>
+				</row>
+
+				<row>
+					<cell>IE4.01</cell>
+					<cell>Ok</cell>
+					<cell>N.A.</cell>
+					<cell>Ok*</cell>
+					<cell>Just wrote:
+						"IE4+/Mac seemed to be the only browser/platform where Pushlets didn't work.
+						Now with my new G4 I could do some tests (IE4.5) and what appears: Pushlets _do_ work. It only
+						takes extremely long (more than a minute) for the first event to come through but after that all
+						is normal (events are directly pushed and appear instantaneously, no events appear to be lost).
+						I guess most of you aren't regular Mac/IE users (I use NS on Mac) but this remained the only
+						IE4+/NS4+ platform where Pushlets didn't work.
+						<para>
+							So what is happening ? Looks like IE/Mac is buffering/timing.
+						</para>
+						Trying to fool it by sending a few hundred preamble spaces. And yes that works!"
+					</cell>
+				</row>
+
+				<row>
+					<cell>IE5.0</cell>
+					<cell>Ok</cell>
+					<cell>N.A.</cell>
+					<cell>?</cell>
+					<cell>For Mac PPC: Needs investigation. Probably as with IE4.5</cell>
+				</row>
+
+				<row>
+					<cell>IE5.01</cell>
+					<cell>Ok</cell>
+					<cell>N.A.</cell>
+					<cell>?</cell>
+					<cell>For Mac PPC: Needs investigation. Probably as with IE4.5</cell>
+				</row>
+
+				<row>
+					<cell>IE5.1</cell>
+					<cell>Ok</cell>
+					<cell>N.A.</cell>
+					<cell>?</cell>
+					<cell>For Mac PPC: Needs investigation. Probably as with IE4.5</cell>
+				</row>
+
+				<row>
+					<cell>IE5.5</cell>
+					<cell>Ok</cell>
+					<cell>N.A.</cell>
+					<cell>available?</cell>
+					<cell>-</cell>
+				</row>
+				<row>
+					<cell>IE6</cell>
+					<cell>Ok</cell>
+					<cell>N.A.</cell>
+					<cell>available?</cell>
+					<cell>-</cell>
+				</row>
+				<row>
+					<cell>Mozilla 1.x</cell>
+					<cell>Ok</cell>
+					<cell>Ok</cell>
+					<cell>to be tested</cell>
+					<cell>-</cell>
+				</row>
+				<row>
+					<cell>NS6+</cell>
+					<cell>to be tested</cell>
+					<cell>to be tested</cell>
+					<cell>to be tested</cell>
+					<cell>-</cell>
+				</row>
+				<row>
+					<cell>FireFox 1.0</cell>
+					<cell>to be tested</cell>
+					<cell>to be tested</cell>
+					<cell>Ok</cell>
+					<cell></cell>
+				</row>
+				<row>
+					<cell>Opera</cell>
+					<cell>to be tested</cell>
+					<cell>to be tested</cell>
+					<cell>Ok</cell>
+					<cell></cell>
+				</row>
+				<row>
+					<cell>Safari</cell>
+					<cell>N.A.</cell>
+					<cell>N.A.</cell>
+					<cell>Ok</cell>
+					<cell>In forced pull-mode only</cell>
+				</row>
+			</table1>
+		</section2>
+		<section2 title="Server Compatibility">
+
+			<para>
+				Pushlet development was initially done with the Jetty servlet server. In theory Pushlets should
+				work with all Java2 servlet-based servers but this remains theory as long as it has not been tested.
+				For servlet engines that support J2EE .war files and webapp v2.3 it is just a matter
+				of dropping pushlet.war into the webapps autodeploy directory.
+			</para>
+			<para>
+				Pushlets are known to workon at least the following servers.
+			</para>
+			<table1 border="true">
+				<row>
+					<cell>
+						<bold>Server/versions</bold>
+					</cell>
+					<cell>
+						<bold>Supplier</bold>
+					</cell>
+					<cell>
+						<bold>Remarks</bold>
+					</cell>
+				</row>
+
+				<row>
+					<cell>Tomcat 3.1 through 5.0.28</cell>
+					<cell>
+						<link href="http://jakarta.apache.org" target="_new">Apache Jakarta</link>
+					</cell>
+					<cell>Works in Tomcat stand-alone mode (Tomcat as webserver)</cell>
+				</row>
+
+				<row>
+					<cell>Apache 1.3.22 with Tomcat5</cell>
+					<cell>
+						<link href="http://www.apache.org" target="_new">Apache group</link>
+					</cell>
+					<cell>Works! Using the AJP13 protocol. This is the config used on www.pushlets.com</cell>
+				</row>
+
+				<row>
+					<cell>JBoss 2 and JBoss 3 with Tomcat or Jetty</cell>
+					<cell>
+						<link href="http://www.jboss.org" target="_new">JBoss.org</link>
+					</cell>
+					<cell>Works by just dropping the pushlet.war into the the JBoss deploy dir! I use this configuration
+						for quick deploy/debug.
+					</cell>
+				</row>
+
+
+				<row>
+					<cell>JServ1.1 (Win98)</cell>
+					<cell>
+						<link href="http://java.apache.org" target="_new">Apache Java Project</link>
+					</cell>
+					<cell>Tried with Apache 1.3.12. Either Apache or JServ seem to buffer the Pushlet events. They come
+						through in NS (albeit slowly) but none in IE.
+						If adding spaces to the events (to let the buffers fill up) events are pushed more quickly, but
+						clearly
+						this is not the way to go. Any ideas ? (Chunked Encoding?).
+						<para>
+							The good news: Pullets work fine!
+						</para>
+					</cell>
+				</row>
+
+				<row>
+					<cell>Jetty 2.x.y/3.x</cell>
+					<cell>
+						<link href="http://www.mortbay.com" target="_new">Mortbay Consulting</link>
+					</cell>
+					<cell>By Just: Working great. Original server used to develop Pushlets.</cell>
+				</row>
+
+				<row>
+					<cell>JSWDK 1.0</cell>
+					<cell>
+						<link href="http://www.sun.com" target="_new">Sun</link>
+					</cell>
+					<cell>Works. No thorough testing done yet. This server is obsolete. Use Tomcat instead.</cell>
+				</row>
+
+				<row>
+					<cell>Personal Webserver (PWS)/New Atlanta Servlet Exec engine v2.2.1 (NT4)</cell>
+					<cell>Microsoft/?</cell>
+					<cell>Reported by Shimon Crown.</cell>
+				</row>
+
+				<row>
+					<cell>Netscape Enterprise Server 3.6/JRun 2.3.3 build 157</cell>
+					<cell>Netscape/LiveSoftware</cell>
+					<cell>Under investigation by Benoit Xhenseval. Not yet definitive if this works.</cell>
+				</row>
+
+				<row>
+					<cell>Orion 1.0.3b</cell>
+					<cell>
+						<link href="http://www.orionserver.com">Evermind Data</link>
+					</cell>
+					<cell>
+						Ok. Only the sources.properties needs to be in Web-inf/classes. If it is in pushlet.jar the
+						classloader
+						still can't seem to find it.
+					</cell>
+				</row>
+
+				<row>
+					<cell>Resin 2.0.4/3+</cell>
+					<cell>
+						<link href="http://www.caucho.com">Caucho</link>
+					</cell>
+					<cell>
+						From Just: Runs fine using the .war file.
+						Only gotcha is that you need to set &lt;ignore-client-disconnect&gt;false&lt;/ignore-client-disconnect&gt;
+						within
+						the &lt;http-server&gt; section of resin.conf. Otherwise resources are held since the
+						IOException is never
+						caught.
+
+					</cell>
+				</row>
+
+				<row>
+					<cell>WebSphere 3.02</cell>
+					<cell>IBM</cell>
+					<cell>Under investigation by Billy Newport and Jaap Gorjup. Quote from Billy's mail:
+						<para>
+							<italic>"I have your demos running on WebSphere 3.02 ok. I need to make modifications so
+								that yours jsps etc work on JSP 0.91 and some urls needed to be changed to run
+								on a websphere server.
+
+								But, this does seem to be a problem with garbage collection subscriptions. It
+								appears that once the browser closes, the socket is not being closed. Hence,
+								when your stuff calls flush on the socket, IOException is not being thrown and
+								the subscription doesn't ever goe away. I've had them hanging around for around
+								an hour now with no browser. I'm using the IBM JDK 1.1.8 on NT to run WebSphere
+								(NT SP3)."
+							</italic>
+						</para>
+						<para>
+							on 1.8.2000 Jaap reported he got pushlets working under WebSphere 3.
+						</para>
+					</cell>
+				</row>
+
+			</table1>
+		</section2>
+	</content>
+</page>
+

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE xbook SYSTEM "nl/justobjects/xbook/rsc/dtd/xbook.dtd">
+
+<xbook titleImage="assets/pushlet-logo.gif" title="Pushlets" bgColor="#001E32" fgColor="white" default="site-main.xml">
+
+	<document label="home" desc="Main" src="site-main.xml"/>
+	<document label="contact" desc="Contact" src="doc/contact.xml"/>
+
+	<!-- ALL EXAMPLES -->
+	<folder label="demos" desc="examples">
+		<external label="HTTP-push" url="/pushlet/examples/basics.html" desc="basics"/>
+		<external label="DHTML" url="/pushlet/examples/dhtml.html" desc="DHTML examples"/>
+		<external label="Pushlets" url="/pushlet/examples/pushlet.html" desc="Pushlet examples"/>
+	</folder>
+
+	<!-- STATUS -->
+	<folder label="project" desc="project">
+		<document label="roadmap" desc="roadmap" src="doc/roadmap.xml"/>
+		<document label="applications" desc="applications" src="doc/applications.xml"/>
+		<external label="sourceforge" url="http://sourceforge.net/projects/pushlets/" desc="SourceForge" target="sf"/>
+		<document label="download" desc="download" src="doc/download.xml"/>
+		<external label="license" url="doc/license.html" desc="contact" copy="y"/>
+		<document label="issues" desc="issues" src="doc/issues.xml"/>
+		<external label="versions" url="doc/version.html" desc="version info" copy="y"/>
+		<document label="compatibility" desc="compatibility" src="doc/compatibility.xml"/>
+		<document label="discussion" desc="discussion" src="doc/discussion.xml"/>
+		<document label="contributing" desc="contributing" src="doc/contributing.xml"/>
+	</folder>
+
+	<!-- DOCUMENTATION -->
+	<folder label="documentation" desc="document">
+		<document label="whitepaper" desc="Whitepaper" src="doc/whitepaper.xml"/>
+		<external label="slides" url="presentation/index.html" desc="slides" target="slides"/>
+		<document label="install" desc="User Guide" src="doc/installation.xml"/>
+		<document label="cookbook" desc="Dev Guide" src="doc/cookbook.xml"/>
+		<document label="protocol" desc="Protocol Spec" src="doc/protocol.xml"/>
+		<external label="api" url="api/index.html" desc="JavaDoc" target="api"/>
+	</folder>
+
+	<!-- SOURCES -->
+	<folder label="sources" desc="source browse">
+		<external label="java2html" url="src/index.html" target="src" desc="Java Sources"/>
+		<external label="viewcvs" url="http://pushlets.cvs.sourceforge.net/pushlets/pushlets" target="src" desc="CVS Sources"/>
+	</folder>
+
+</xbook>

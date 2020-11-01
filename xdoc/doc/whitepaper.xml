@@ -1,0 +1,910 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE doc SYSTEM "nl/justobjects/xbook/rsc/dtd/doc.dtd" >
+<doc>
+ <front>
+  <title>Pushlets - Whitepaper</title>
+  
+  <id>$Id: whitepaper.xml,v 1.5 2005/02/28 14:31:20 justb Exp $</id>
+  
+  <author>
+   <name>Just van den Broecke</name>
+   <organization>Just Objects B.V.</organization>
+   <email>just[AT]justobjects.nl</email>
+  </author>
+
+  <date>August 6, 2002</date>
+
+  <abstract>
+Pushlets are a servlet-based mechanism where
+data is pushed directly from server-side Java objects to
+(Dynamic) HTML pages within a client-browser 
+without using Java applets or plug-ins. This allows a web page to be periodically updated
+by the server. 
+  </abstract>
+ </front>
+ 
+ <middle>
+
+  <section1 title="Introduction">
+   <para>
+Server-side notification to browser-clients is often implemented using applets with RMI, CORBA or
+custom TCP/IP messaging. These techniques are often complex to implement, have firewall restrictions, 
+and require additional server development/maintenance. Also it is 
+hard to integrate the state of the client-applet with 
+the browser's page-content other than refreshing the page or doing all content-layout within the
+applet. 
+   </para>
+   <para>
+Pushlets are a servlet-based mechanism where
+data is pushed directly from server-side Java objects to
+(Dynamic) HTML pages within a client-browser 
+without using Java applets or plug-ins. This allows a web page to be periodically updated
+by the server. The browser client uses JavaScript/Dynamic HTML features 
+available in type 4+ browsers like NS and MSIE. The underlying mechanism uses a servlet HTTP 
+connection over which JavaScript code is pushed
+to the browser. Through a 
+single generic servlet (the Pushlet), browser clients can subscribe to subjects from which 
+they like to receive events.  
+Whenever the server pushes an event, the clients subscribed to the related subject are notified. 
+Event objects can be sent as
+either JavaScript (DHTML clients), serialized Java objects (Java clients), or as XML (DHTML or Java Clients).
+Several application examples are presented such as monitoring (weather, live stock feed, system status)
+and a multi-user applications (chat). 
+   </para>
+   <para>
+The mechanism is lightweight in the sense that uses the servlet
+server's connection management and threading facilities, the javax.servlet APIs 
+and standard Java features such as 
+producer/consumer through Object wait() and notify(). In principle the framework could run within any
+servlet-supporting server and behind firewalls. When JavaScript/DHTML is used on the client
+this provides a convenient way to build applications quickly through scripting and to 
+integrate and layout new content with HTML/CSS features. 
+   </para>
+  </section1> 
+  
+  
+  <section1 title="Motivation">
+  <para>
+Now that more and more Servlets and JavaServer Pages (JSPs) are being deployed on the web, 
+there is often a need to notify and synchronize client web-browsers from state changes
+in server objects after the browser has loaded a page.
+   </para>
+   <para>
+These changes can be caused by users updating an EJB through a servlet or database record
+or by events in a multi-user application such as chat and shared whiteboard. 
+These type of applications often use a distributed Model View Controller (MVC) pattern where
+the Model is on the server (with possible caching in clients) and the Control and View (possibly
+combined) reside within the client.
+   </para>
+   <para>
+There are also applications where we would like to subcribe to dynamic 
+content that is continuously pushed from the server. Examples
+stock feeds, system status, weather conditions or other monitoring applications. 
+This follows an Observer (a.k.a. Publish/Subscribe)
+pattern where remote clients (Observers) register for updates from server objects (Subjects).
+   </para>
+   <para>
+How can we notify browser-clients <italic>after</italic> their HTML page has loaded ? 
+Or what to do if we would like to selectively update only parts of a page. For example only the
+stock item in an HTML TABLE whose rate has changed ? 
+  </para> 
+  </section1> 
+ 
+<section1 title="Notification Solutions">
+<para>
+Let's assume that we have a Java web/application server from which we want to notify
+client browsers. Solutions we have can be categorized as "polling", "server-side callbacks" and
+"messaging".
+  </para> 
+<section2 title="Polling" >
+The simplest solution is a "timed page refresh". Using HTML META tags in the header of the HTML
+document, the page is automatically reloaded every N seconds. If in the meantime something
+has changed on the server we get the new content, otherwise we get the same stuff. 
+But how large should we make the refresh interval ?
+</section2>
+<section2 title="Server-side callbacks" >
+Since we are seasoned Java developers building serious
+applications, we often use "server-side callbacks". Here
+a server objects calls back a Java applet client using RMI or CORBA. 
+</section2>
+<section2 title="Messaging (MOM)" >
+In this solution an applet is a client from a messaging middleware server that pushes
+messages over a TCP/IP connection (java.net.Socket) or using connectionless UDP messages
+(java.net.DatagramSocket), the latter possibly even with multicast (java.net.MulticastSocket).
+You could use a messaging product such as iBus (SoftWired), MQSeries (IBM) or WebLogic Events
+(BEA) or develop your own custom messaging with java.io.ObjectStream's over sockets.
+</section2>
+<section2 title="Discussion" >
+<para>
+Each of the above solutions has its advantages/disadvantages in complexity, security, performance, 
+scalability, browser Java compatibility and restrictions like firewalls. 
+The most optimal solution strongly depends on what your application is supposed to do.
+For example, when users require a direct
+interaction with the state such as in a shared whiteboard,
+server side-callbacks or messaging can be a powerful technique.
+   </para>
+   <para>
+But we are still within a browser and unless the applet constitutes the entire client application, 
+it is hard to integrate updates coming from the server with the HTML content.
+How can we alter this content from within the applet when it gets the callback or message ?
+One solution is to refresh the page by calling <code>AppletContext.showDocument(URL)</code> 
+within the callback method. 
+   </para>
+   <para>
+Since HTML is meant for layout, wouldn't it be nice to be able to directly
+alter parts of the HTML content with incremental data coming from the server ?
+This would be an ideal scheme for web-applications where content on the server is
+dynamically changing and the required user-to-server interaction is minimal, e.g. driven by HTML FORMs.
+   </para>
+   <para>
+In addition to the above solutions I have developed a technique that is lightweight, thin on the client,
+requires no applets or plug-ins, directly integrates with scripting/HTML, uses standard HTTP connections 
+and can be deployed (in theory!) in any 
+Java servlet-server. It is certainly not meant to replace the above solutions.
+My intention is to add another option to your toolbox.  You as Java architects/developers
+should determine the trade-offs and choose what is best for your particular application.
+   </para>
+</section2>
+  </section1> 
+
+<section1 title="Pushlet Basics">
+<para>
+So what are these Pushlets and how do they work ? In its basic form a Pushlet is 
+luckily extremely simple. Through a few examples I will show the basics. It is by now
+also time for some code !
+</para>
+<section2 title="HTTP Streaming">
+<para>
+Pushlets are based on HTTP streaming, a technique that is sometimes used in multimedia
+viewing applications such as QuickTime. Instead of closing the HTTP
+connection after fetching an HTML page, the connection is kept open while 
+fresh data is pushed to the client. 
+</para>
+</section2>
+
+<section2 title="Example 1">
+<para>
+Taking the idea of HTTP streaming we could develop a JSP (since that
+it easier to deploy, but it could be a servlet as well) that continuously sends new HTML content
+back to the client in a timer loop. 
+</para>
+
+<listing>
+
+&lt;HTML>
+&lt;HEAD>
+   &lt;META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   &lt;META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+&lt;/HEAD>
+&lt;BODY BGCOLOR="blue" TEXT="white">
+&lt;% 
+  int i = 1;
+    
+  try {
+    while (true) {
+       out.print("&lt;h1>"+(i++)+"&lt;/h1>");
+       out.flush();
+      
+       try {
+            Thread.sleep(3000);
+       } catch (InterruptedException e) {
+       out.print("&lt;h1>"+e+"&lt;/h1>");
+        }
+     }
+   } catch (Exception e) {
+       out.print("&lt;h1>"+e+"&lt;/h1>");
+   }
+%>
+&lt;/BODY>
+&lt;/HTML>
+
+</listing>
+<para>
+Click example 1 on the examples/basics page. This is not very useful since the pushed
+content is continuously appended to the page while we would like to refresh it.
+</para>
+
+</section2>
+<section2 title="Example 2">
+<para>
+Here we jump right into the Pushlet mechanics. Click on example 2 on the examples/basics page and see
+that the page is refreshed every 3 seconds. How the ... is this done ?
+</para>
+<para>
+This example consists of three files: push-js-stream.html, push-js-stream-pusher.jsp and push-js-stream-display.html.
+push-js-stream.html is the main page which contains each of the two other files in HTML FRAMEs. Let's just follow
+the route of the events. 
+</para>
+<para>
+The following lists push-js-stream-pusher.jsp. This is a JavaServer page that is executed on the server when
+requested. The main body of this file is listed below.
+</para>
+<listing>
+  7: &lt;% 
+  8:   /** Start a line of JavaScript with a function call to parent frame. */
+  9:   String jsFunPre = "&lt;script language=JavaScript >parent.push('";
+ 10:   
+ 11:   /** End the line of JavaScript */
+ 12:   String jsFunPost = "')&lt;/script> ";
+ 13:   
+ 14:   int i = 1;
+ 15:   try {
+ 16:   
+ 17:     // Every three seconds a line of JavaScript is pushed to the client
+ 18:     while (true) {
+ 19:     
+ 20:        // Push a line of JavaScript to the client 
+ 21:        out.print(jsFunPre+"Page "+(i++)+jsFunPost);
+ 22:        out.flush();
+ 23:        
+ 24:        // Sleep three secs
+ 25:        try {
+ 26:             Thread.sleep(3000);
+ 27:        } catch (InterruptedException e) {
+ 28:             // Let client display exception 
+ 29:             out.print(jsFunPre+"InterruptedException: "+e+jsFunPost);
+ 30:        }
+ 31:      }
+ 32:    } catch (Exception e) {
+ 33:             // Let client display exception 
+ 34:             out.print(jsFunPre+"Exception: "+e+jsFunPost);
+ 35:    }
+ 36: %> 
+</listing>
+<para>
+	<italic>NB there may be a problem with examples 1 and 2 when using JSPs: some servlet engines
+	will "eat" the IOException when a client leaves such that the JSP page will never catch the exception.
+		In that case the loop may run forever.
+    This is one of the reasons that the Pushlet implementation uses a Servlet (where the IOException can be and is caught).
+	</italic>
+</para>
+<para>
+Again we see a timer loop which prints (line 21) some HTML to the browser every three seconds.
+But wait, it is not pushing HTML but JavaScript ! What does this mean ? Effectively it pushes
+a line like for example &lt;script language=JavaScript >parent.push('Page 4')&lt;/script>. 
+What does this mean for the browser ? The browser has its JavaScript engine running and 
+obediently executes each next line coming in. It is calling a JavaScript function 
+parent.push(). Now the parent is the parent of the FRAME it is in, which is
+our first file push-js-stream.html. Let's see what happens there.
+</para>
+
+<listing>
+
+&lt;script LANGUAGE="JavaScript">
+var pageStart="&lt;HTML>&lt;HEAD>&lt;/HEAD>&lt;BODY BGCOLOR=blue TEXT=white>&lt;H2>Server pushes: &lt;para>";
+var pageEnd="&lt;/H2>&lt;/BODY>&lt;/HTML>";
+
+  // Callback function with message from server.
+  // This function is called from within the hidden JSP pushlet frame
+  function push(content) {
+ 
+    // Refresh the display frame with the content received
+    window.frames['displayFrame'].document.writeln(pageStart+content+pageEnd);
+    window.frames['displayFrame'].document.close();
+  }
+
+&lt;/script>
+&lt;/HEAD>
+
+&lt;FRAMESET BORDER=0 COLS="*,0">
+     &lt;!-- frame to display the content pushed by the pushlet -->
+     &lt;FRAME SRC="push-js-stream-display.html" NAME="displayFrame"  BORDER=0  SCROLLING=no>
+     
+     &lt;!-- Hidden frame with the pushlet that pushes lines of JavaScript-->
+     &lt;FRAME SRC="push-js-stream-pusher.jsp" NAME="pushletFrame" BORDER=0  SCROLLING=no>
+&lt;/FRAMESET>
+
+</listing>
+<para>
+
+We see the push() function called from within the JSP frame (pushletFrame) is writing whatever
+it gets passed in its argument 'content' into the displayFrame. This is a piece of Dynamic HTML:
+you can refresh the content of a frame or window by calling 'writeln' of its 'document' object.
+So the displayFrame is the real View where the content is displayed. It is initially black and
+displaying a 'Wait...' text until the first content is pushed from the server.
+</para>
+<listing>
+&lt;HTML>
+&lt;BODY BGCOLOR=black TEXT=white>
+&lt;H1>WAIT...&lt;/H1>
+&lt;/BODY>
+&lt;/HTML>
+</listing>
+<para>
+This is basically the whole idea of Pushlets: we just stream in lines of JavaScript from a Servlet
+(or JSP for the example). These lines get interpreted by the browser who may do something interesting.
+So effectively we have a callback from Java in the server to JavaScript in the browser client !
+Phew, that was easy !
+</para>
+<para>
+This example showed the mechanics, but there are still a couple of issues to be solved and features
+to be added. For this reason I've built a small server-side Pushlet framework shown in the class 
+diagram, plus some JavaScript libraries for the client. Since the client heavily will rely
+on more DHTML features such as Layers we will walk through some DHTML first. See examples/dthml.
+</para>
+</section2>
+</section1>
+
+<section1 title="Not just Java - Dynamic HTML">
+<para>
+Long gone (in Internet time) are the days when 
+websites could be produced by the local sysop who 
+scanned in some images from the company's brochure and knew 
+a few HTML-tags. The possibilities for manipulating content and user interaction
+within the browser are expanding 
+through something called "Dynamic HTML" (DHTML). As a Java programmer
+using servlets and JSPs, DHTML is something that should become part of
+your toolkit.
+</para>
+<para>
+DHTML refers to a combination
+of HTML, Cascading Style Sheets (CSS), JavaScript and the browser's Document Object Model (DOM).
+Traditionally a page could only be altered by reloading a new page 
+from the server. DHTML allows full control an HTML document within a browser 
+after its page has been loaded. You probably have seen examples on the web
+such as "image roll-overs", pop-up content and collapsabe menus. DHTML is supported by 
+most version 4 browsers, albeit with some differences in standards (see "Cross-browser DHTML" below).
+</para>
+<para>
+From a programmer's point of view the entire document in the browser, i.e. its frames, images, 
+paragraphs, tables etc.,  
+is represented as an hierarchical object model, the DOM (not to be confused with the XML DOM). 
+Through JavaScript you can
+manipulate the elements of the DOM and thereby change the content/appearance 
+of the document. Also, you can capture user events from these elements
+such as mouse moves and form submission, and subsequently process these to
+modify DOM elements.
+For example, a mouse moving over an image may produce a "mouse-over" event that
+is processed by changing the image by a highlighted version or popping up explanatory 
+text. Document elements may even be animated by moving them around.
+This sounds great doesn't it ? We just need to get familiar with the DHTML
+standard and off we go ! Hmm, but who defines the DHTML standard ?
+</para>
+<para>
+
+This hits an issue that has witheld many developers from embracing DHTML.
+First of all you need a version 4+ browser.
+The "official" standards body for DHTML-related specifications
+is the <link href="http://www.w3c.org">World Wide Web Consortium (W3)</link>.
+However the Microsoft and Netscape type 4+ browsers each have proprietary 
+DHTML extensions that you must track as well. 
+</para>
+<para>
+Luckily the situation is much better now. Most users by now have type 4 browsers, plus
+some people (in particular the "Dannymen", Dan Steinman and Danny Goodman, see References section)
+have done good work on creating cross-browser DHTML libraries that you can reuse.
+As a Java programmer you may appreciate the fact that you can do reasonably clean object-based or 
+even object-oriented programming in JavaScript. In my basic DHTML demos you will find
+some examples, but it is worthwhile to check out the DHTML resources. Once you have
+browser issues hidden behind a facade of cross-browser libraries DHTML programming
+becomes real fun.
+</para>
+<para>
+So with Java gaining more market on the server and DHTML having these
+powerful features on the client, my idea with Pushlets was to directly couple these two
+great technologies in a very direct way. For this I have implemented a lightweight
+framework for the server and some DHTML libraries for the client. These are discussed
+next in the Design section.
+</para>
+</section1>
+
+<section1 title="Design of the Framework">
+	<strong>THIS STILL REFLECTS VERSION 1 (REWORKING...).
+</strong>
+<para>
+The Pushlet framework allows clients to subscribe to subjects within a server from which they subsequently
+receive events. The framework's basic design pattern is Publish-Subscribe also known as Observer and
+has both server and client components:
+</para>
+
+<list>
+<item>
+A server-side collection of Java classes designed around the Pushlet class (see UML class diagram).
+</item>
+<item>
+A client-side reusable JavaScript library (pushlet.js) and HTML (pushlet.html)
+for receiving events within DHTML clients.
+</item>
+<item>
+Client-side Java classes (JavaPushletClient.java and JavaPushletClientListener.java)
+for receiving events within Java clients.
+</item>
+<item>
+Cross-browser DHTML utility libraries (layer.js, layer-grid.js, layer-region.js) for displaying content in DHTML layers.
+</item>
+<item>
+Generation of test events (EventGenerators.java) and example applications (e.g. temperature.html).
+</item>
+</list>
+<section2 title="Server-side class design">
+<para>
+Below is the UML class diagram of the server-side Java classes <strong>[reflects v0.0.4; rework required]</strong>.
+</para>
+<center>
+<image href="assets/pushlet-class-diagram.gif" />
+<para>
+<strong>Figure 1. Pushlet Framework Class Diagram. </strong>
+</para>
+</center>
+<para>
+The key classes are the Pushlet servlet, the Publisher class, Subscriber interface, and the 
+Event class (see class diagram). 
+By invoking the Pushlet servlet through an HTTP request, clients subscribe to receive Events. In the request is
+indicated:
+</para>
+
+<list>
+<item>
+for which "subject" they would like to receive Events. </item>
+<item>in which format (JavaScript calls (default), XML or Java serialized objects) they should receive Events and,</item>
+<item>through which receiver protocol (future version)</item>
+</list>
+<para>
+An example request for receiving AEX stock rates formatted as JavaScript through an HTTP response stream would be:
+</para>
+<listing>
+http://www.fluidiom.com:8080/servlet/pushlet?subject="/stocks/aex"
+</listing>
+<para>
+Subject identifiers are organized as an hierarchical "topic-tree". For example,
+"/stocks" identifies all Events related to stock rates, while "/stocks/aex" identifies stock rates for the
+Amsterdam EXchange. Likewise the subject "/" indicates all events. 
+</para>
+<para>
+Currently the only receiver protocol is a client HTTP response stream.
+In a future extension also the receiver protocol and address
+can be indicated, e.g. TCP, UDP, RMI, HTTP POSTing, or even SMTP (email).
+</para>
+<para>
+An Event is merely a set of name/value String pairs (implemented with java.util.Properties). The Publisher has an interface
+through which classes that generate Events can publish them. The Publisher keeps a list of Subscribers and sends
+each Event to those Subscribers whose subject matches to the Event's subject. Events may be originating within
+the server through EventGenerators who may listen to external events such as a stock feed. In addition clients
+may publish Events through HTTP with the Postlet class. The responsibilities of other classes in class diagram, PushletSubscriber and its contained classes can best
+be explained through scenario's. 
+</para>
+<section3 title="Scenario: Event Subscription">
+<center>
+<image href="assets/seq-subscribe.gif" />
+<para>
+<strong>Figure 2. Subscribe Sequence Diagram. </strong>
+</para>
+</center>
+<para>
+Above is the UML sequence diagram for a browser client subscribing
+for events from the Publisher. The Pushlet is invoked with the servlet method doGet(). Because multiple
+clients may invoke the same Pushlet object, it should itself not be a Subscriber. Instead it delegates all
+subscription (and subsequent Event handling) by creating a new PushletSubscriber object for each doGet()
+and letting it run until finished with eventLoop(). The PushletSubscriber is a Subscriber object towards
+the Publisher where it registers with the join() method. To deal with different client formats and protocols it 
+creates a specialized ClientAdapter object, in this case a BrowserPushletAdapter. For browsers supporting
+Multipart MIME such as Netscape 4+, this would be a MultipartBrowserClientAdapter. The final call in this scenario
+is a "wait for event loop". Note that deQueue() is a method that suspends the execution of the current thread
+until an Event becomes available (indicated with half-arrow). This is explained through the next scenario.
+</para>
+</section3>
+<section3 title="Scenario: Sending and Dispatching Events">
+<center>
+<image href="assets/seq-publish.gif" />
+<para>
+<strong>Figure 3. Publish Sequence Diagram. </strong>
+</para>
+</center>
+<para>
+Above is the UML sequence diagram for sending an Event. It
+ shows how an Event is generated and dispatched to the browser client. 
+In this scenario an EventGenerator
+creates an Event and calls Publisher.publish() to have it dispatched. The Publisher walks through its
+list of Subscribers and asks each if the Event matches its subscription criteria (currently only the
+subject). If it matches it calls send() on the Subscriber. 
+</para>
+
+<para>
+Each PushletSubscriber object has
+a GuardedQueue object in which it queues incoming Events when send() is called. So why isn't it just
+directly pushing the Event to the BrowserPushletAdapter ? First of all we want to suspend execution of the 
+BrowserPushletAdapter-thread until an Event becomes available, i.e. we don't want to do a "busy-wait" (a.k.a. as polling).
+The second reason is that a Publisher may notify multiple clients. Having a synchronous send() call a slow client
+on the other end of the line may block all other clients that are to be notified next. This is actually a 
+design pitfall which I see also in RMI or CORBA callback examples where a list of clients is called
+back synchronously. Client #13 on a slow connection and 386 processor may spoil it for the rest.
+</para>
+<para>
+The GuardedQueue is a utility object that allows Objects to be en/dequeued using the readers-writers pattern
+with guarded suspension using java.lang.Object.wait() and notifyAll(). The thread of a client of GuardedQueue
+calling deQueue() will be suspended (using wait()) until there is an Object queued. Likewise a client enQueueing
+an Object will be suspended as long as the queue is full.  When clients are fast enough the GuardedQueue is never
+filling up. After the BrowserPushletSubscriber has dequeued an Event object it will call push() on the 
+BrowserPushletAdapter who will format the Event to a JavaScript element and send it to the browser.
+For example for a Philips stock rate of 123.45 the JavaScript element looks as follows.
+</para>
+<listing>
+&lt;SCRIPT language=JavaScript >parent.push('subject', '/stocks/aex', 'philips', '123.45') &lt;/SCRIPT>
+</listing>
+</section3>
+</section2>
+
+<section2 title="Client-side framework">
+<para>
+By now we have arrived on the client browser side. The Pushlet itself was assigned to a hidden
+HTML FRAME. The parent of that FRAME is called and has to implement the push() method. Since this
+is a common task for all browser clients, two reusable files are provided for the client: pushlet.html
+(see /src/nl/justobjects/pushlet/pushlet.html) and pushlet.js (see /src/nl/justobjects/pushlet/pushlet.js).
+</para>
+<para>
+pushlet.html is meant to be included in a FRAME within the application-specific client HTML document. It
+can be parameterized with the subject identifier and a background color (such that it remains invisible).
+The most important thing it does is implementing the JavaScript push() method as follows:
+</para>
+<listing>
+function push() {
+	// Create a PushletEvent object from the arguments passed in
+	// push.arguments is event data coming from the Server 
+        pushletEvent = new PushletEvent(push.arguments)
+
+        // Show blinking light as data is coming in
+	updateStatusFrame();
+	
+	// Is parent ready to receive events ?
+	if (!parent.onPush) {
+		return;
+	}
+	
+	// Forward the event to the parent frame who should do application
+	// specific handling of the event
+	parent.onPush(pushletEvent);
+}
+</listing>
+<para>
+The function push() first creates a JavaScript object from the parameters passed in. Yes you can do object-based
+programming in JavaScript. Reminiscent of 'varargs' in C/C++, JavaScript functions may have variable
+number of arguments. A PushletEvent object is created with whatever arguments were passed to push() from
+the server. PushletEvent is implemented in pushlet.js shown next.
+</para>
+<listing>
+/* Object to represent nl.justobjects.pushlet.Event in JavaScript. 
+   Arguments are an array where args[i] is name and args[i+1] is value 
+*/
+function PushletEvent(args) {
+   // Member variable setup; the Map stores the N/V pairs
+   this.map = new Map();
+   
+   // Member function setup
+   this.getSubject = PushletEventGetSubject
+   this.put = PushletEventPut
+   this.get = PushletEventGet
+   this.toString = PushletEventToString
+   this.toTable = PushletEventToTable
+
+   // Put the arguments' name/value pairs in the Map
+   for (var i=0; i &lt; args.length; i++) {
+     this.put(args[i], args[++i] );
+   }
+}
+
+// Get the subject attribute
+function PushletEventGetSubject() {
+  return this.map.get('subject')
+}
+
+// Get event attribute
+function PushletEventGet(name) {
+  return this.map.get(name)
+}
+
+// Put event attribute
+function PushletEventPut(name, value) {
+  return this.map.put(name, value)
+}
+
+function PushletEventToString() {
+  return this.map.toString();
+}
+
+// Convert content to HTML TABLE
+function PushletEventToTable() {
+  return this.map.toTable();
+}
+
+</listing>
+<para>
+pushlet.js in turn uses a Map JavaScript object, a java.util.Hashtable-like object I've added.
+</para>
+<para>
+Next push() calls updateStatusFrame() to show a blinking light to indicate we are still receiving
+events and if a parent.onPush() function exists, it calls it with the PushletEvent. parent.onPush() is the
+application-specific event handling function that in this case may update the 'philips' stock-related Layer
+in a DHTML page.
+</para>
+<para>
+This ends the description of the basic framework design. 
+</para>
+</section2>
+</section1>
+
+<section1 title="Applications">
+<para>
+Pushlets allow many types of web applications to be developed. 
+Since the framework also allows for clients to upload events (through the
+Postlet), possible applications are not just passive pushing of data. Each application
+can be categorized according to:
+</para>
+
+<list>
+<item>whether the events originate from the server or from clients or both,</item>
+<item>if state is kept on the server or within the clients or both.</item>
+</list>
+<para>
+Also since live events are made available to JavaScripting, this allows also scriptable plug-ins
+to receive live updates. For example you may script your Macromedia Flash or VRML
+World application.
+</para>
+<para>
+Below is a range of applications. On the Pushlets website several simple demos are provided.
+</para>
+
+<section2 title="Monitoring" >
+<para>
+Various data sources may be monitored live such as stocks, weather, votes, flight arrivals and systems.
+</para>
+<para>
+See a real-world FX stocks/news application that I worked on at 
+<link href="http://www.rabotreasuryweb.com" target="_new">www.rabotreasuryweb.com</link> (IE only).
+</para>
+<para>
+I also discovered other real-time stock/news sites that are deploying Pushlets or a variant:
+</para>
+<para>
+<link href="http://www.marketnews.com" target="_new">www.marketnews.com</link>.
+</para>
+</section2>
+
+<section2 title="Gaming" >
+<para>
+From a two-user tic-tac-toe up and chess up to more elaborate Risk and Monopoly. 
+</para>
+</section2>
+
+<section2 title="Distributed Model View Controller (MVC)">
+<para>
+This refers to a design pattern often found in user interface frameworks such as 
+Java Swing and Microsoft MFC. In the distributed variant a Model (often the data) resides on
+a server while clients hold the Views and Controls. Through the Controls the Model
+is modified. The Model will then notify all attached Views who will subsequently refresh themselves.
+</para>
+<para>
+Many applications may have a web front-end through which data on the server is updated by multiple users.
+Examples are reservation systems and bookings. If one client makes an update, the others won't see
+the update unless they continuously refresh their pages. In some cases this is a simple and 
+workable solution, but there are also cases where users need to be synchronized with the update as
+it happens. This type of application is easily done with Pushlets pushing a URL as the single event.
+When a client receives the URL it will refresh the page with it.
+</para>
+<para>
+One notable example are the much discussed Enterprise JavaBeans (EJBs). Although Java clients
+are able to talk directly to an EJB (through RMI or CORBA), more often servlets and JSPs are
+used as a front-end. In this case notification becomes much harder. With Pushlets an EJB
+could notify its attached web-clients whenever its state changes.
+</para>
+</section2>
+
+<section2 title="Web Presentations" >
+<para>
+Also known as WebTours or like I dubbed once: "Are you being surfed ?". This is actually an application from which
+I derived Pushlets. I abandoned PowerPoint for making Java course content and developed a content
+management framework based on XML with presentation (slides etc) in HTML. Since in many 
+situations the classroom had no beamer but all students a networked computer, I developed
+a simple application (WebPres) that allowed me to change HTML slides with all students
+automatically following them in their browsers.
+</para>
+</section2>
+
+<section2 title="User Assistance" >
+<para>
+This type of application can also be useful in situations like call centers, banks or help-desks or e-commerce 
+web applications in general. When I phone in with a question the agent may surf me to URLs with solutions, offers or 
+other information. 
+</para>
+<para>
+A real-world application where this example of Pushlet-technology is currently used 
+is a foreign-exchange trading application I helped developing at one of my clients. See the result at
+<link href="http://www.rabotreasuryweb.com" target="_new">www.rabotreasuryweb.com</link> (IE only).
+</para>
+<para>
+Using a back-end of EJBs and a JSP front-end, clients can buy or sell foreign currencies. An
+"AutoTrader" object automates the offering process. If somehow the automatic offering fails or the client requests
+a human dealer, a "Dealer Intervention" takes place, whereby a dealer is notified and 
+enters a new offer which is pushed to the client browser using Pushlet technology.
+</para>
+</section2>
+
+<section2 title="Community Tools" >
+<para>
+Various applications where multiple users can join in a live session. I originally had
+a prototype of the framework where a multi-user session was realized as a 
+collection of HTTP Session objects. I am planning to extend the Pushlet framework
+with these capabilities. For now I have a simple web-chat and what I call WCQ (in Dutch
+this sounds almost like We Seek You), a simple ICQ-like desktop window where you can
+monitor the presence of friends.
+</para>
+<para>
+Other applications in this area include live forums and shared document editing. 
+</para>
+
+</section2>
+</section1>
+
+<section1 title="Liabilities">
+<para>
+This chapter describes the consequences of using Pushlets
+</para>
+<para>
+
+As with any mechanism or design pattern there are obvious advantages and disadvantages with Pushlets as
+compared to Java-based applet solutions that use messaging or client callbacks with CORBA/RMI.
+</para>
+<section2 title="Advantages">
+<list>
+<item>
+<italic>direct integration with DHTML within the browser:</italic> data generated by the server can be immediately integrated into the 
+the page content of the browser. All the layout capabilities of HTML can be directly applied.
+Unless the entire client is implemented in the applet, it is hard to integrate the applet with its containing
+web page.
+</item>
+<item>
+<italic>standard HTTP port and protocols:</italic> messaging and RMI/CORBA use non-standard ports which may not work through
+firewalls, or browser security restrictions may prevent callbacks or receiving data over UDP.
+</item>
+<item>
+<italic>client weight:</italic> Java applets with RMI/CORBA often make the client more heavyweight in startup and 
+resource consumption
+</item>
+<item>
+<italic>no extra server:</italic> messaging and RMI/CORBA often require a dedicated server product to be maintained. Pushlets
+can in theory run on any servlet engine, using its functionalities such as 
+connection management and multithreading (this may be disadvantage as well, see below).
+</item>
+<item>
+<italic>small protocol overhead</italic>
+</item>
+</list>
+</section2>
+<section2 title="Disadvantages">
+<list>
+<item>
+<italic>cross-browser DHTML:</italic> effort is required to make cross-browser DHTML libraries that work in all browser versions
+on all platforms.
+</item>
+<item>
+<italic>scalability:</italic> When 100-'s of clients are connected 
+through Pushlets they may hog resources such as threads and sockets. On this type of scale it would be better
+to serve Pushlets off a dedicated servlet server optimized for this type of usage. Scalability is also an issue
+with CORBA callbacks.
+</item>
+<item>
+<italic>webserver issues:</italic> a webserver is usually not designed for long-lived connections. A solution is the same as
+applied with 'scalability'.
+</item>
+<item>
+<italic>proxy-buffering:</italic> one reviewer pointed me at the fact that some proxy-servers may buffer HTTP data. 
+</item>
+</list>
+</section2>
+</section1>
+
+<section1 title="Further Work">
+<para>
+I am further testing the viability of Pushlets. The Pushlet framework is actually a generic Publish/Subscribe
+pattern with HTTP-based Pushlet clients as a special case. I am evolving the framework with the following extensions
+</para>
+<section2 title="Additional client receiver-protocols such as TCP and UDP">
+<para>
+One interesting area is the possibility to
+call an applet that receives UDP messages from within the Pushlet frame on the client. This would mean
+that we don't keep the HTTP connection. In general clients will subscribe with a HTTP request on which
+they indicate through which protocol (TCP, UDP, RMI, HTTP-stream, HTTP POST) they want to receive events
+and in which format (XML, Java serialized objects,...). Where required the address of the receiver is 
+specified. For example to receive XML formatted stock events through UDP on port 5001:
+</para>
+
+<listing>
+http://www.fluidiom.com:8080/servlet/pushlet?subject="/stocks/aex"&amp;format="XML"&amp;protocol="UDP"&amp;port="5001"
+</listing>
+<para>
+With UDP a lease time may need to be specified (since the server would never know when the client leaves). 
+If the lease is not renewed after this time the server will drop the client.
+</para>
+</section2>
+
+<section2 title="additional client sender-protocols">
+<para>
+Currently events are generated internally or through the Postlet by using the HTTP POST request. Additional
+protocols such as RMI, TCP and UDP may be applied.
+</para>
+</section2>
+
+<section2 title="subject state" >
+<para>
+Currently a subject is just an hierarchical string and a client that subscribes
+gets no history that may have been built up. For example in a chat some discussion may have been going on.
+In a next version subjects will become first class objects such that when clients subscribe they
+may implicitly get the current state or may explicitly request the state.
+</para>
+</section2>
+
+<section2 title="multi-user" >
+<para>
+Although some multi-user applications are possible there is no knowledge or management
+on the server. In earlier versions I have experimented with combining multiple HTTP Sessions into
+a multi-user HTTP session.
+</para>
+</section2>
+
+</section1>
+
+ </middle>
+ 
+ <back>
+   <reference-list>
+     <reference-item id="JW1">
+An in-depth look at RMI callbacks (4/20/99); 
+<link target="_new" href="http://www.javaworld.com/javaworld/javaqa/1999-04/05-rmicallback.html">www.javaworld.com/javaworld/javaqa/1999-04/05-rmicallback.html</link>
+     </reference-item>
+
+     <reference-item id="JW2">
+Java Tip 34: POSTing via Java/ Learn how to POST data to Web servers in Java; 
+<link target="_new" href="http://www.javaworld.com/javaworld/javatips/jw-javatip34.html/">www.javaworld.com/javaworld/javatips/jw-javatip34.html/</link>
+     </reference-item>
+
+     <reference-item id="JW3">
+Java Tip 41: POSTing via Java revisited. Learn how to display the HTML document returned by the Web server; 
+<link target="_new" href="http://www.javaworld.com/javaworld/javatips/jw-javatip41.html">www.javaworld.com/javaworld/javatips/jw-javatip41.htm</link>
+     </reference-item>
+
+     <reference-item id="JW4">
+Connect to a Java server via HTTP; 
+<link target="_new" href="http://www.javaworld.com/javaworld/javaqa/1999-12/02-qa-firewall.html">www.javaworld.com/javaworld/javaqa/1999-12/02-qa-firewall.html</link>
+     </reference-item>
+
+     <reference-item id="JW5">
+Networking our whiteboard with servlets.; 
+<link target="_new" href="http://www.javaworld.com/javaworld/jw-01-1998/jw-01-step.html">www.javaworld.com/javaworld/jw-01-1998/jw-01-step.html</link>
+     </reference-item>
+
+     <reference-item id="JW6">
+Subject-oriented programming through RMI (<link target="_new" href="http://www.fluidiom.com">Gerald de Jong</link>); 
+<link target="_new" href="http://www.javaworld.com/javaworld/jw-08-1998/jw-08-subjectop.html">www.javaworld.com/javaworld/jw-08-1998/jw-08-subjectop.html</link>
+     </reference-item>
+
+     <reference-item id="JH">
+Jason Hunter's ("Java Servlet Programming", O'Reilly) servlet site.; 
+<link target="_new" href="http://www.servlets.com">http://www.servlets.com</link>
+     </reference-item>
+
+     <reference-item id="DL">
+Doug Lea - Concurrent Programming in Java - 2nd edition.; 
+<link target="_new" href="http://www.amazon.com/exec/obidos/ASIN/0201310090/qid=947663408/sr=1-1/002-7173150-1663403">www.amazon.com</link>
+     </reference-item>
+
+     <reference-item id="DD">
+The Dynamic Duo; Cross-Browser Dynamic HTML; 
+<link target="_new" href="http://dansteinman.com/dynduo">dansteinman.com/dynduo</link>
+     </reference-item>
+
+     <reference-item id="DG">
+JavaScript and Dynamic HTML; Danny Goodman ("Dynamic HTML: The Definitive Reference", O'Reilly); 
+<link target="_new" href="http://www.dannyg.com">www.dannyg.com</link>
+     </reference-item>
+
+     <reference-item id="SI">
+Scott Isaacs' ("Inside DHTML") community site on DHTML; 
+<link target="_new" href="http://www.siteExperts.com">www.siteExperts.com and www.insideDHTML.com</link> 
+     </reference-item>
+
+     <reference-item id="WM">
+WebMonkey (Wired Magazine) DHTML zone
+<link target="_new" href="http://hotwired.lycos.com/webmonkey/collections/dynamic_html.html/?tw=dynamic_html">http://hotwired.lycos.com/webmonkey/collections/dynamic_html.html/?tw=dynamic_html</link> 
+     </reference-item>
+   </reference-list>
+ </back>
+</doc>

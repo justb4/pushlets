@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page SYSTEM "nl/justobjects/xbook/rsc/dtd/page.dtd" >
+<page>
+	<info>
+		<title>Applications</title>
+		<id>$Id: applications.xml,v 1.5 2006/10/05 17:35:05 justb Exp $</id>
+		<author>
+			<name>Just van den Broecke</name>
+			<email>just[AT]justobjects.nl</email>
+		</author>
+		<date>$Date: 2006/10/05 17:35:05 $</date>
+	</info>
+	<content>
+
+
+		<para>
+			Pushlets have been used in many (commercial) applications and demos. Below are examples I know of.
+			If you know of other products or your product is not featured here
+			<link href="mailto:just[AT]justobjects.nl">let me know</link>.
+		</para>
+		<para>
+			<link target="_new" href="http://www.geotracing.com">www.geotracing.com</link>
+			- real-time GPS tracing on a Google Map
+		</para>
+		<para>
+			<link target="_new" href="http://www.n8spel.nl">www.n8spel.nl</link>
+			- one of several GeoTracing applications
+		</para>
+
+		<para>
+			<link target="_new" href="http://www.senseofthecity.nl">www.senseofthecity.nl</link>
+			- another GeoTracing application
+		</para>
+
+		<para>
+			<link target="_new" href="http://www.qnadesign.com">www.qnadesign.com</link>
+			- see case study for www.marketnews.com
+		</para>
+
+		<para>
+			<link target="_new" href="http://corporates-public.rabobank.nl/wps/portal/onlineservices">www.rabotreasuryweb.com</link>
+			- pushlet-based real-time market data
+		</para>
+
+		<para>
+			<link target="_new" href="http://mis.sourceforge.net/">mis.sourceforge.net</link>
+			- a software toolkit for monitoring events
+		</para>
+
+		<para>
+			<link target="_new" href="http://www.incito.com/ftseDemo.jsp">www.incito.com/ftseDemo.jsp</link>
+			- demo displaying real-time prices from the FTSE100
+		</para>
+
+	</content>
+</page>

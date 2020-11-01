@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE doc SYSTEM "nl/justobjects/xbook/rsc/dtd/doc.dtd" >
+<doc>
+	<front>
+		<title>Pushlets - Protocol Specification</title>
+		<id>$Id: protocol.xml,v 1.5 2006/05/25 11:20:26 justb Exp $</id>
+		<author>
+			<name>Just van den Broecke</name>
+			<organization>Just Objects B.V.</organization>
+			<email>just[AT]justobjects.nl</email>
+		</author>
+		<date>$Date: 2006/05/25 11:20:26 $</date>
+		<abstract>
+			This document provides the Pushlet protocol
+			specification. WORK IN PROGRESS. FOR NOW SOME HIGHLIGHTS.
+		</abstract>
+	</front>
+	<middle>
+
+
+		<section1 title="Concepts">
+			<para>
+				The Pushlet protocol facilitates
+				publishing and streaming of data on top of the
+				standard
+				<link href="http://www.w3c.org/Protocols/rfc2616/rfc2616.html">HTTP protocol</link>
+				This section introduces the main Pushlet protocol concepts.
+			</para>
+			<section2 title="Example">
+
+				<para>
+					As a start, below is an example of Pushlet protocol exchange between
+					a client and a server (various details omitted).
+				</para>
+				<listing>
+					<include href="assets/proto-example-1.txt"/>
+				</listing>
+				<para>
+					The above example shows a client starting a session
+					through a
+					<code>join</code> request. This request is acknowledged
+					with an XML event
+					<code>join-ack</code>. Subsequently
+					a data stream is opened using the
+					<code>listen</code> request.
+					The
+					<code>listen-ack</code> is returned followed by the
+					data events over the data channel.
+				</para>
+			</section2>
+			<section2 title="Streaming">
+				<para>
+					Concepts used in the
+					Pushlet protocol are somewhat similar to
+					those used in the
+					<link href="http://www.ietf.org/rfc/rfc2326.txt">Real-Time Streaming Protocol (RTSP)</link>.
+				</para>
+				<para>
+					Like RTSP the Pushlet protocol
+					provides both a control channel and a data channel.
+					The client uses the control channel
+					to start/stop sessions (join/leave), subscribe/unsubscribe
+					to/from subjects, publish data etc.
+					The actual streaming of data is
+					transmitted out of band over a separate (HTTP) connection.
+				</para>
+				<para>
+					Since the HTTP protocol is request/response oriented,
+					data streaming
+					is achieved similar to audio/video streaming over HTTP,
+					i.e. as a very long response.
+					Since not all clients may support long-lived HTTP responses,
+					data streaming may also be conducted in the so called
+					<code>pull</code> and
+					<code>poll</code> modes as controlled by the client or enforced
+					by the server. In these latter modes the server will end
+					the HTTP response document after one or more events are returned
+					and instruct the
+					client to wait and renew (refresh) the data streaming request.
+				</para>
+			</section2>
+			<section2 title="Events">
+				<para>
+					Protocol control and data messages exchanged between client and server
+					are called <code>events</code>. Pushlet events
+					are currently defined as a flat set of name/value pairs. The Pushlet
+					protocol reserves names starting with <code>p_</code> to
+					discern protocol-specific names from user-supplied names.
+				</para>
+				<para>
+					<italic>Note: future versions of the protocol will introduce
+						a more versatile event structure in which applications
+						may use arbitrary payload data.
+					</italic>
+				</para>
+			</section2>
+			<section2 title="Event Encoding">
+				<para>
+					To encode events (control responses and data)
+					sent to the client, the Pushlet protocol supports several
+					encoding formats. Browser clients supporting DHTML
+					 receive events encoded as JavaScript calls.
+					This technique is similar to what Apple describes as
+					<link href="http://developer.apple.com/internet/webcontent/iframe.html" target="_new">
+						Remote Scripting.
+						</link>
+					Other
+					clients, such as Java clients can receive events as XML elements as a stream (format="xml"
+					or as a complete document (format="xml-strict").
+					The preferred encoding format is specified by the client.
+				</para>
+				<para>
+					Control events to the server can be specified as HTTP query parameters
+					when using GET or as XML in a POST body.
+				</para>
+			</section2>
+			<section2 title="Session Management">
+				<para>The Pushlet protocol provides a simple form of session management.
+					A client starts with creating a Pushlet session using a
+					<code>join</code>
+					request. This request is acknowledged by the server through a
+					<code>join-ack</code>
+					response. Within the response a session id (
+					<code>p_id</code>) is returned
+					that the client should supply in all other requests in this session.
+					Note that Pushlet session management is independent from the
+					standard HTTP session management (often with cookies) as to
+					be independent of specific server implementations or (browser) client settings.
+				</para>
+				<para>
+					Since not all applications may require session management, the
+					<code>join-listen</code> service
+					is supplied that allows clients to join, subscribe and listen in one request.
+					This allows for very simple clients (like even Unix
+					<code>telnet</code>) to
+					receive data without the need to keep state.
+				</para>
+			</section2>
+			<section2 title="Topic Subscription">
+				<para>
+					After a client has created a Pushlet session or even while streaming
+					data, it can
+					<code>subscribe</code> to and
+					<code>unsubscribe</code>
+					from topics, historically called
+					<code>subjects</code>.
+				</para>
+			</section2>
+			<section2 title="Event Publication">
+				<para>
+					After a client has created a Pushlet session or even while streaming
+					data, it use the
+					<code>publish</code> service to send data events
+					to the server. The server will route the event to those clients with
+					a matching subscription (multicast). The event may also be directed
+					to one specific client by supplying that client's session id.
+				</para>
+			</section2>
+		</section1>
+
+		<section1 title="Protocol Services">
+			<para>
+				Below is a summary of the Pushlet protocol services.
+			</para>
+			<table1 border="true">
+				<row>
+					<cell>
+						<strong>Service</strong>
+					</cell>
+					<cell>
+						<strong>Description</strong>
+					</cell>
+				</row>
+				<row>
+					<cell>
+						<code>join</code>
+					</cell>
+					<cell>Start a Pushlet session</cell>
+				</row>
+				<row>
+					<cell>
+						<code>leave</code>
+					</cell>
+					<cell>Stop a Pushlet session</cell>
+				</row>
+				<row>
+					<cell>
+						<code>subscribe</code>
+					</cell>
+					<cell>Subscribe to one or more subjects</cell>
+				</row>
+				<row>
+					<cell>
+						<code>unsubscribe</code>
+					</cell>
+					<cell>Unsubscribe from one or more or all subjects</cell>
+				</row>
+				<row>
+					<cell>
+						<code>listen</code>
+					</cell>
+					<cell>Open data channel and starts data streaming in one of three modes:
+						<code>stream</code>,
+						<code>pull</code> or
+						<code>poll</code>.
+						In pull or poll mode the server may provide so called
+						<code>refresh</code>
+						indications that the client should refresh
+						this data stream request
+					</cell>
+				</row>
+				<row>
+					<cell>
+						<code>join-listen</code>
+					</cell>
+					<cell>One-request service to immediately join,
+						subscribe and start streaming data events.
+						After this service the state is similar as after
+						<code>listen</code>.
+						Simple and
+						<link href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm" target="_new">RESTful</link> clients may use this one-shot service.
+					</cell>
+				</row>
+				<row>
+					<cell>
+						<code>publish</code>
+					</cell>
+					<cell>
+						Publish data event to be dispatched by the server.
+						Clients may use this service to multicast or
+						unicast events through the server.
+					</cell>
+				</row>
+				<row>
+					<cell>
+						<code>heartbeat</code>
+					</cell>
+					<cell>Indicate peer is alive</cell>
+				</row>
+			</table1>
+		</section1>
+		<section1 title="Implementation">
+			<para>
+				The server-part of the Pushlet protocol is
+				controlled by the Pushlet web application as part of the
+				distribution. For the client-side several libraries
+				are provides, most notably JavaScript and Java.
+			</para>
+			<para>
+				See
+
+				<link href="http://pushlets.cvs.sourceforge.net/pushlets/pushlets/webapps/pushlet/lib/js-pushlet-client.js">js-pushlet-client.js (JavaScript library)</link> and
+				<link href="http://www.pushlets.com/src/nl/justobjects/pushlet/client/PushletClient.java.html">PushletClient.java</link>
+			</para>
+			<para>
+				Other client-types used are Macromedia Flash and even telnet.
+			</para>
+		</section1>
+		<section1 title="Raw Protocol Exchange">
+			<para>
+				Below some samples of captured with
+				<link href="http://www.circlemud.org/~jelson/software/tcpflow/">
+					<code>tcpflow</code></link>, a very valuable tool to
+				capture/analyse protocol traffic..
+			</para>
+			<section2 title="JavaScript Encoding">
+				<para>
+					The example below shows HTTP
+					requests exchanged between a browser and the server.
+					The encoding is JavaSCript and the mode
+					is
+					<code>stream</code>.
+
+				</para>
+				<listing>
+					<include href="assets/proto-example-js.txt"/>
+				</listing>
+			</section2>
+			<section2 title="XML Encoding">
+				<para>
+					The next example below shows HTTP
+					requests exchanged between a browser and the server.
+					The encoding is XML and the mode
+					is
+					<code>stream</code>.
+					The exchange was captured from the PushletPingApplication,
+					a test application that both publishes and subscribes
+					to the topic "/test/ping".
+					The tcpflow output shows who is sending receiving with
+					lines like <code>010.000.000.200.08080-010.000.000.030.52200: </code>,
+					denoting the sender IP/port-receiver IP/port. In our example the client
+					resides on IP 10.0.0.30 and the server on 10.0.0.200.
+
+				</para>
+				<listing>
+					<include href="assets/proto-example-xml.txt"/>
+				</listing>
+			</section2>
+
+		</section1>
+
+	</middle>
+</doc>
+
+
+
+

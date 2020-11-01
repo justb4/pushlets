@@ -1,0 +1,414 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<title>Pushlets</title>
+	<!-- metadata -->
+	<meta name="generator" content="JO"/>
+	<meta name="version" content="S5 1.1"/>
+	<meta name="presdate" content="20050728"/>
+	<meta name="author" content="Just van den Broecke"/>
+	<meta name="company" content="Just Objects"/>
+	<!-- configuration parameters -->
+	<meta name="defaultView" content="slideshow"/>
+	<meta name="controlVis" content="hidden"/>
+	<!-- style sheet links -->
+	<link rel="stylesheet" href="ui/default/slides.css" type="text/css" media="projection" id="slideProj"/>
+	<link rel="stylesheet" href="ui/default/outline.css" type="text/css" media="screen" id="outlineStyle"/>
+	<link rel="stylesheet" href="ui/default/print.css" type="text/css" media="print" id="slidePrint"/>
+	<link rel="stylesheet" href="ui/default/opera.css" type="text/css" media="projection" id="operaFix"/>
+	<!-- embedded styles -->
+	<style type="text/css" media="all">
+		.imgcon {
+			width: 525px;
+			margin: 0 auto;
+			padding: 0;
+			text-align: center;
+		}
+
+		#anim {
+			width: 270px;
+			height: 320px;
+			position: relative;
+			margin-top: 0.5em;
+		}
+
+		#anim img {
+			position: absolute;
+			top: 42px;
+			left: 24px;
+		}
+
+		img#me01 {
+			top: 0;
+			left: 0;
+		}
+
+		img#me02 {
+			left: 23px;
+		}
+
+		img#me04 {
+			top: 44px;
+		}
+
+		img#me05 {
+			top: 43px;
+			left: 36px;
+		}
+	</style>
+	<!-- S5 JS -->
+	<script src="ui/default/slides.js" type="text/javascript"></script>
+</head>
+
+<body>
+
+<div class="layout">
+	<div id="controls"><!-- DO NOT EDIT --></div>
+
+	<div id="currentSlide"><!-- DO NOT EDIT --></div>
+
+	<div id="header"></div>
+
+	<div id="footer"><h2>Overview</h2></div>
+
+</div>
+
+<div class="presentation">
+<div class="slide">
+	<h1><img src="assets/pushlet-logo.gif" alt="" title="Default"/></h1>
+
+	<p>Just van den Broecke</p>
+
+	<p>
+		just[AT]justobjects.nl<br/>
+		<a href="http://www.justobjects.nl" target="_new">www.justobjects.nl</a><br/>
+		<a href="http://www.geotracing.com" target="_new">www.pushlets.com</a>
+	</p>
+</div>
+
+
+<div class="slide">
+	<h1>Subjects</h1>
+	<ul>
+		<li>Why</li>
+		<li>What</li>
+		<li>How</li>
+		<li>When</li>
+		<li>Where</li>
+	</ul>
+</div>
+
+<div class="slide">
+	<h1>About Me</h1>
+	<ul>
+		<li><a href="http://www.justobjects.nl/jo/cv.html" target="_new">20+ years in software industry</a></li>
+		<li>1985-1996 <a href="http://www.lucent.com" target="_new">AT&amp;T Bell Labs/Lucent</a></li>
+		<li>1997+ <a href="http://www.justobjects.nl" target="_new">Just Objects B.V.</a>
+			<ul>
+				<li>independent consultant/developer/trainer</li>
+				<li>emphasis on OOT/Java/Multimedia/Webtech/AJAX</li>
+				<li>OSS projects: <a href="http://www.keyworx.org" target="_new">KeyWorx</a>, <a
+						href="http://www.pushlets.com" target="_new">Pushlets</a>, <a href="http://www.geotracing.com"
+																					  target="_new">GeoTracing</a>, <a
+						href="http://www.justobjects.org/cowcatcher" target="_new">CowCatcher</a></li>
+				<li>2004+: <a href="http://www.justobjects.org/blog/index.php?cat=5" target="_new">locative media and
+					GIS projects</a></li>
+				<li>2006+: fulltime <a href="http://www.geotracing.com" target="_new">GeoTracing</a> projects</li>
+			</ul>
+			<li><a href="http://www.wordspy.com/words/neogeography.asp" target="_new">Neogeographer</a></li>
+		</li>
+	</ul>
+</div>
+
+<div class="slide">
+	<h1>Pushlets in a Nutshell</h1>
+
+	<h2>HTTP-based publish/subscribe </h2>
+	<ul>
+		<li>publish: GET/POST or method call</li>
+		<li>subscribe: GET stream, pull and poll modes</li>
+		<li>topic tree</li>
+		<li>protocol formats: JS, XML, (JSON)</li>
+		<li>use any client that speaks HTTP</li>
+		<li>extensibility: declarative classes e.g. event sources</li>
+		<li>integration: separate .war or within app .war</li>
+		<li>impl: Java (J2EE/servlets), JavaScript (AJAX)</li>
+	</ul>
+</div>
+
+<div class="slide">
+	<h1>Why</h1>
+	<ul>
+		<li>IP-port limitations in (corporate) firewalls</li>
+		<li>instability of applet/Flash solutions</li>
+		<li>pure HTML solution gives optimal web-page integration</li>
+		<li>page-refresh often expensive/annoying</li>
+	</ul>
+</div>
+
+<div class="slide">
+	<h1>Protocol</h1>
+	<ul>
+		<li>session: join/leave
+			<ul>
+				<li>session id (no cookies)</li>
+				<li>all requests must include session id</li>
+			</ul>
+		</li>
+		<li>subscription: subscribe/unsubscribe
+			<ul>
+				<li>subscribe to one or more "subjects" (topics)</li>
+			</ul>
+		</li>
+		<li>publication
+			<ul>
+				<li>publish events to topic</li>
+			</ul>
+		</li>
+		<li>data: listen
+			<ul>
+				<li>receive messages (called Events)</li>
+				<li>three modes (poll, stream, pull)</li>
+				<li>may be combined with join (join-listen) for simple clients </li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+
+<div class="slide">
+	<h1>Topic Tree</h1>
+	<ul>
+		<li>publish/subscribe to "subjects"
+			<ul>
+				<li>strings, e.g. /chat/room42</li>
+				<li>hierarchical, e.g. /stocks/aex , /stocks/aex/philips</li>
+				<li>subscribe to levels below in hierachy</li>
+			</ul>
+		</li>
+		<li>contract between publisher/subscriber
+			<ul>
+				<li>application-specific</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+<div class="slide">
+	<h1>Dataflow</h1>
+
+	<div class="center">
+		<img src="assets/data-flow.jpg" alt="dataflow"/>
+	</div>
+</div>
+
+<div class="slide">
+	<h1>Data Listen Modes</h1>
+
+	<p>These determine behaviour in C/S interaction</p>
+	<ul>
+		<li>stream: like HTTP video streaming</li>
+		<li>poll: ordinary polling</li>
+		<li>pull: like fishing
+			<ul>
+				<li>events present: return</li>
+				<li>events not present: block until timeout or event avail</li>
+			</ul>
+		</li>
+		<li>client indicates mode or server may enforce (config or browser)</li>
+	</ul>
+</div>
+
+<div class="slide">
+	<h1>Poll Mode</h1>
+
+	<div class="center">
+		<img src="assets/poll-mode.jpg" alt="poll"/>
+	</div>
+</div>
+
+<div class="slide">
+	<h1>Stream Mode</h1>
+
+	<div class="center">
+		<img src="assets/stream-mode.jpg" alt="stream"/>
+	</div>
+</div>
+
+<div class="slide">
+	<h1>Pull Mode (1) - Block</h1>
+
+	<div class="center">
+		<img src="assets/pull-mode-1.jpg" alt="pull1"/>
+	</div>
+</div>
+
+<div class="slide">
+	<h1>Pull Mode (2) - Message Avail</h1>
+
+	<div class="center">
+		<img src="assets/pull-mode-2.jpg" alt="pull2"/>
+	</div>
+</div>
+
+<div class="slide">
+	<h1>Pull Mode (3) - Timeout</h1>
+
+	<div class="center">
+		<img src="assets/pull-mode-3.jpg" alt="pull3"/>
+	</div>
+</div>
+
+<div class="slide">
+	<h1>Event Publication</h1>
+
+	<ul>
+		<li>local
+			<ul>
+				<li>using configured <code>EventSources</code></li>
+				<li>method call through <code>Dispatcher</code></li>
+			</ul>
+		</li>
+		<li>remote (HTTP)
+			<ul>
+				<li>using protocol</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+</div>
+
+<div class="slide">
+	<h1>JavaScript Clients</h1>
+
+	<p>Two libraries available</p>
+	<ul>
+		<li>js-pushlet-client.js
+			<ul>
+				<li>uses "hidden-iframe-trick"</li>
+				<li>format: JavaScript functions as events</li>
+			</ul>
+		</li>
+		<li>ajax-pushlet-client.js
+			<ul>
+				<li>uses XMLHttpRequest</li>
+				<li>format: XML (later JSON)</li>
+				<li>not yet stream mode</li>
+			</ul>
+		</li>
+
+	</ul>
+</div>
+
+<div class="slide">
+	<h1>Web Client Example</h1>
+<pre>
+<code>
+&lt;html&gt;
+  &lt;head&gt;
+   &lt;script type="text/javascript" src="../../lib/js-pushlet-client.js"&gt;&lt;/script&gt;
+
+   &lt;script type="text/javascript"&gt;
+     function init() {
+       p_join_listen('/stocks/aex');
+     }
+
+     function onData(pushletEvent) {
+       var stock = pushletEvent.get('name');
+       var rate = pushletEvent.get('rate');
+     }
+    &lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body onLoad="init()"&gt;
+    &lt;script type="text/javascript"&gt;p_embed()&lt;/script&gt;
+       .
+       . (HTML elements to present rates)
+  &lt;/body&gt;
+  &lt;/html&gt;
+</code>
+</pre>
+</div>
+
+<div class="slide">
+	<h1>Other Clients</h1>
+
+	<p>Several available</p>
+	<ul>
+		<li>Java J2SE
+			<ul>
+				<li>use in Applets or Applications</li>
+				<li>may use Java Serialized Objects (discouraged)</li>
+			</ul>
+		</li>
+		<li>Java J2ME </li>
+		<li>Flash</li>
+		<li>Command line, e.g. wget</li>
+
+	</ul>
+</div>
+
+<div class="slide">
+	<h1>Configuration</h1>
+
+	<ul>
+		<li>pushlets.properties
+			<ul>
+				<li>timers (e.g. refresh in pull mode)</li>
+				<li>queue sizes</li>
+				<li>enforcing modes</li>
+			</ul>
+		</li>
+		<li>sources.properties
+			<ul>
+				<li>configure user-supplied event source classes</li>
+				<li>pull and push sources</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+<div class="slide">
+	<h1>Extensibility</h1>
+
+	<ul>
+		<li>server
+			<ul>
+				<li>configure custom <code>SessionManager</code> (e.g. for authorization)</li>
+				<li>configure custom <code>Dispatcher</code></li>
+				<li>configure <code>EventSources</code></li>
+			</ul>
+		</li>
+		<li>client
+			<ul>
+				<li>other client technologies</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+
+<div class="slide">
+	<h1>Integration and Deployment</h1>
+
+	<ul>
+		<li>pushlet.war file
+			<ul>
+				<li>use as message exchange</li>
+			</ul>
+		</li>
+		<li>integrate in yourapp.war
+			<ul>
+				<li>pushlet.jar</li>
+				<li>config files (in WEB-INF/classes)</li>
+				<li>client JavaScript libraries</li>
+			</ul>
+		</li>
+	</ul>
+</div>
+
+</body>
+</html>

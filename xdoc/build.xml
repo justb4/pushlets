@@ -1,0 +1,148 @@
+<!--
+
+ANT Build file for XBook doc
+
+Can also be used to just build documentation without building
+the entire thing.
+
+author: Just
+version: $Id: build.xml,v 1.16 2007/05/12 06:10:29 justb Exp $
+
+-->
+<project name="pushlet-doc" default="doc" basedir="..">
+	<!-- Project global properties, overrule by modifying build.properties -->
+	<property file="${basedir}/build.properties"/>
+
+	<target name="init">
+		<tstamp/>
+	</target>
+
+	<!-- Defines the XBook task and its CLASSPATH -->
+	<taskdef name="xbook" classname="nl.justobjects.xbook.XBookAntTask">
+		<!--
+			NOTE: for JDK14 xbook.jar and xbookaux.jar needs to be placed in the
+			Ant lib dir in order to work. For JDK13 and below comment this out.  -->
+		<classpath>
+			<pathelement location="${xbook.jar}"/>
+			<!--	<pathelement location="${xbookaux.jar}"/>   -->
+		</classpath>
+
+	</taskdef>
+
+	<target name="javadoc">
+		<mkdir dir="${basedir}/doc/api"/>
+
+		<javadoc sourcepath="${basedir}/src"
+				 destdir="${basedir}/doc/api"
+				 classpath="${servlet.jar}"
+				 packagenames="nl.justobjects.*"
+				 author="true"
+				 private="true"
+				 version="true"
+				 windowtitle="Just Objects - ${project.name} - API Documentation"
+				 doctitle="&lt;h1&gt;Just Objects - ${project.name} (Version ${project.version})&lt;/h1&gt;"
+				 bottom="Copyright &#169; 2000-2003 - Just Objects B.V."/>
+	</target>
+
+	<!-- Defines the task for java2html -->
+	<taskdef name="java2html" classname="com.java2html.Java2HTMLTask">
+		<classpath>
+			<pathelement location="${j2h.jar}"/>
+		</classpath>
+	</taskdef>
+
+	<target name="src2html" depends="init">
+		<delete dir="${basedir}/doc/src"/>
+		<mkdir dir="${basedir}/doc/src"/>
+		<java2html title="Pushlet v${project.version} - Java Sources"
+				   simple="no"
+				   tabsize="4"
+				   marginsize="2"
+				   header="true"
+				   footer="true"
+				   destination="${basedir}/doc/src">
+			<fileset dir="${basedir}/src">
+				<include name="**/*.java"/>
+			</fileset>
+
+			<!--
+		<javadoc  localRef="../api" httpRef="http://www.pushlets.com/site/doc/api"/>
+		<javadoc localRef="c:\ant\docs\api" httpRef="http://somewebsite.com/docs/api"/>   -->
+		</java2html>
+
+	</target>
+
+	<!-- Generate all documentation -->
+	<target name="xbook" depends="init">
+
+		<java classname="nl.justobjects.xbook.XBook" fork="true"
+			  failonerror="true"
+			  maxmemory="128m"
+				>
+			<arg value="-lite"/>
+			<arg value="${basedir}/xdoc/dist-book.xml"/>
+			<arg value="${basedir}/doc"/>
+			<classpath>
+				<pathelement location="${xbook.jar}"/>
+				<pathelement location="${xbookaux.jar}"/>
+			</classpath>
+		</java>
+
+		<replace file="${basedir}/doc/doc/installation.html" token="$[VERSION]" value="${project.version}"/>
+		<replace file="${basedir}/doc/doc/installation-all.html" token="$[VERSION]" value="${project.version}"/>
+	</target>
+
+	<!-- Generate all documentation -->
+	<target name="doc" depends="javadoc,src2html,xbook"/>
+
+	<!-- Generate the website-->
+	<target name="site" depends="javadoc,src2html">
+		<java classname="nl.justobjects.xbook.XBook" fork="true"
+			  failonerror="true"
+			  maxmemory="128m"
+				>
+			<arg value="-lite"/>
+			<arg value="${basedir}/xdoc/site-book.xml"/>
+			<arg value="${basedir}/webapps/site"/>
+			<classpath>
+				<pathelement location="${xbook.jar}"/>
+				<pathelement location="${xbookaux.jar}"/>
+			</classpath>
+		</java>
+
+		<!--		<xbook book="${basedir}/xdoc/site-book.xml" dest="${basedir}/webapps/site" lite="true"/>  -->
+		<replace file="${basedir}/webapps/site/doc/installation.html" token="$[VERSION]" value="${project.version}"/>
+		<replace file="${basedir}/webapps/site/doc/installation-all.html" token="$[VERSION]"
+				 value="${project.version}"/>
+
+		<copy todir="${basedir}/webapps/site/api" overwrite="true">
+			<fileset dir="${basedir}/doc/api"/>
+		</copy>
+
+		<copy todir="${basedir}/webapps/site/src" overwrite="true">
+			<fileset dir="${basedir}/doc/src"/>
+		</copy>
+		<copy todir="${basedir}/webapps/site/presentation" overwrite="true">
+			<fileset dir="${basedir}/xdoc/presentation"/>
+		</copy>
+	</target>
+
+	<!-- Publish the website -->
+	<target name="publish" depends="site">
+		<copy todir="${site.dir}" overwrite="true">
+			<fileset dir="${basedir}/webapps/site"/>
+		</copy>
+	</target>
+
+	<!-- Publish the website immediately -->
+	<target name="publish-only">
+		<copy todir="${site.dir}" overwrite="true">
+			<fileset dir="${basedir}/webapps/site"/>
+		</copy>
+	</target>
+
+	<target name="clean">
+		<delete dir="${basedir}/doc"/>
+		<delete dir="${basedir}/webapps/site"/>
+	</target>
+</project>

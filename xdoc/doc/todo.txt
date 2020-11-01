@@ -1,0 +1,17 @@
+Just's todo list
+
+1. fix applet tags to enforce Java plugin on IE
+
+2. move examples to XHTML
+
+3. beautify stocks example
+
+
+
+done
+1. get all examples working again
+- rewrite chat example, using jenchat
+http://code.jenseng.com/jenChat/
+2. label on subscribe
+
+3. multi-subject subscribe

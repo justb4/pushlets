@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page SYSTEM "nl/justobjects/xbook/rsc/dtd/page.dtd" >
+<page>
+	<info>
+		<title>Development Roadmap</title>
+		<id>$Id: roadmap.xml,v 1.12 2007/11/24 11:00:35 justb Exp $</id>
+		<author>
+			<name>Just van den Broecke</name>
+			<email>just[AT]justobjects.nl</email>
+		</author>
+		<date>$Date: 2007/11/24 11:00:35 $</date>
+	</info>
+	<content>
+
+
+		<para>
+			This document provides
+			the Pushlet development roadmap.
+			It lists features to be developed and their development status.
+
+			This lists the status as on $Date: 2007/11/24 11:00:35 $.
+			The document has two main sections: the "To Do" section lists the "wishlist" of
+			features. The "Done" section outlines developed and thus available features.
+			See also
+			<link href="http://sourceforge.net/tracker/?group_id=62939" target="_new">the SourceForge tracker.</link>
+
+		</para>
+
+		<section2 title="To Do">
+			<section3 title="Event Structure Enhancements">
+				<para>Currently Event is a flat structure of name/value
+					pairs, with Pushlet-specific names prefixed with
+					<code>p_</code>
+
+				</para>
+
+				<para>
+					This may be enhanced as follows:
+				</para>
+				<list>
+					<item>provide a body/payload member that can be an arbitrary
+						string, such that apps can transfer e.g. arbitrary strings, XML
+						trees or even binary data using CDATA.
+
+					</item>
+					<item>investigate/enforce URL-encoding of Event fields.
+					</item>
+				</list>
+
+			</section3>
+			<section3 title="Event Publishing">
+				<para>The pushlet protocol and -clients support a
+					<code>publish()</code>
+					method
+					to publish events remotely
+
+					but there are additional features.
+				</para>
+
+				<list>
+					<item>move EventSources into separate webapp such that
+						pushlet.war can be deployed as-is
+						<break/>
+						<strong>You can currently disable all event sources through pushlet.properties</strong>
+
+
+					</item>
+					<item>subscribe/unsubscribe notification
+
+					</item>
+				</list>
+
+			</section3>
+			<section3 title="Internet Explorer 2-Connection Limit">
+				<para>This is a nasty issue first Reported by Shimon Crown.</para>
+				<para>
+					<italic>"I have found a strange bug when more than 1 IE 5.x
+						browser is used to access the pushlet from the same client.
+						The first
+						two browsers access and report the pushlet results very nicely.
+						The third one justs hangs. If you close one of the browsers,
+						that is working then the third browser starts working
+						(providing it hasn't timed out). Curiously this doesn't occur with
+						Netscape 6 (or the identical Mozilla build for that matter). "
+					</italic>
+				</para>
+				<para>
+					This is a limitation for IE when using HTTP/1.1: by default only
+					two connections can be made. When more connections are needed
+					a Windows Registry setting has to be made.
+
+				</para>
+				<strong>This is (partly) solved by multiple subject subscription that
+					can take place "out-of-band". A client
+					can also provide a label (tag) on subscription as a string. This label is
+					sent on events for the subject and may be used to denote for example
+					an internal JavaScript callback function.
+				</strong>
+			</section3>
+			<section3 title="Configuration">
+				<para>Facilitate configuration in user-supplied dirs
+					<break/>
+					<para>
+						As configuration files like pushlet.properties are accessed
+						through the CLASSPATH, users may already override
+						configuration properties by dropping their own property files
+						in the appserver's CLASSPATH. In Tomcat this can be effected
+						by dropping in the
+						<code>shared/classes</code>
+						dir.
+
+					</para>
+					<para>
+						The idea here is to allow a
+						<code>config.redirect</code>
+						property
+						that specifies the actual user file.
+					</para>
+
+				</para>
+			</section3>
+
+			<section3 title="Browser/DHTML Enhancements">
+				<para>
+					Scrutinize the JavaScript library (need DHTML expert).
+				</para>
+			</section3>
+			<section3 title="Event Routing">
+				<para>Currently simple topic-tree string matching.
+					See if this mechanism can be extended.
+				</para>
+				<para>
+					<strong>
+						Possibly the current mechanism extended
+						with multiple subject subscription is ok.
+					</strong>
+				</para>
+			</section3>
+			<section3 title="Deployment">
+				<para>Provide a pushlet.war that doesn't need to
+					be changed (goes together with Event Publishing enhancements)
+				</para>
+				<para>
+					<strong>
+						Since the remote event publishing through POST works this is already
+						possible. Still enhancements needed.
+					</strong>
+				</para>
+			</section3>
+			<section3 title="Event State / Caching">
+				<para>Provide a way such that subscribing pushlet clients can first receive the current state
+					(e.g. all current exchange rates) followed by regular notification updates.
+				</para>
+				<para>
+					The idea is that the Dispatcher will have configurable caches for
+					indicated topics. This will be configured through
+					<code>cache.properties</code>. Per-subject one of two cache types
+					can be specified: key-based (HashMap, e.g. for the current
+					values of let's say stocks) or FIFO-based (last N events).
+				</para>
+			</section3>
+			<section3 title="Web Services">
+				<para>WS specifies notification through callback. See if we can use
+					pushlet streaming to support WS clients behind firewals/NATs.
+				</para>
+			</section3>
+			<section3 title="RPC Support">
+				<para>
+					Add support for RPC calls in the
+					Pushlet protocol.
+				</para>
+				<para>
+					RPC can facilitated with a special control event (p_rpc) that specifies
+					a handler/method to be invoked on the server. The developer should
+					be able to supply handlers (Java classes)
+					on the server and configure them
+					in a file, like
+					<code>rpc.properties</code>.
+				</para>
+				<para>
+					For example each handler could have a unique string and a classname.
+					The return value could be the existing (enhanced) Event.
+					Basically this feature would allow a service similar to
+					XMLHttpRequest.
+				</para>
+			</section3>
+
+			<section3 title="Additional Client Types">
+				<para>Try to support Flash natively, i.e. not through JavaScripting.
+					<break/>
+					<strong>
+						Prototyped Flash with Pushlet in "pull" mode works!. Also Java mobile clients
+						(J2ME).
+					</strong>
+
+				</para>
+				<para>Python/Ruby and friends.
+					<break/>
+
+				</para>
+			</section3>
+
+			<section3 title="Security">
+				<para>There is no security currently. See how security can be added non-intrusively.
+					<break/>
+					<strong>
+						Tricky issue. At least v2.0.0 allows a developer-supplied
+						SessionManager and Dispatcher, such that
+						custom security/authorisation may be enforced in some cases.
+					</strong>
+
+				</para>
+				<para>
+					Need to add some parameters to allow/disallow e.g. inet domains
+					to publish events.
+				</para>
+			</section3>
+			<section3 title="Performance/Scalability">
+				<para>Get exact figures for limits and make enhancements. A generic Pushlet server with NIO
+					is a possibility.
+
+
+				</para>
+				<para>Aim for linear scalability.
+					<break/>
+
+				</para>
+				<para>
+					An interesting enhancement would be the use of Java Non-Blocking I/O (NIO).
+					This may be practically realized in Tomcat using the
+					<link href="http://cheetahweb.sourceforge.net/">Cheetah NIO Connector</link>
+					under development.
+				</para>
+				<para>
+					If Pushlets are to be used on a large scale it may be advantageous to develop
+					a dedicated Pushlet HTTP server.
+					This server would appear as an ordinary HTTP server towards clients but could
+					be optimized for
+					long-lived connections, for example by using configurable thread pools and
+					assigning a "thread-per-event" i.s.o. a "thread-per-connection" as most web-servers do.
+				</para>
+			</section3>
+			<section3 title="Examples">
+				<para>More examples.
+					<break/>
+					<strong>
+						Improved and simplified most of the v1 examples.
+					</strong>
+
+				</para>
+			</section3>
+			<section3 title="Administration">
+				<para>Provide administrative pages to pushlet.war.
+					<break/>
+
+				</para>
+			</section3>
+		</section2>
+		<section2 title="Done">
+			<section3 title="Event Publishing">
+				<para>Provide an easy way for to publish Events remotely to the
+					Pushlet server.
+				</para>
+
+
+				<list>
+					<item>Postlet and PostletClient using HTTP POST to publish events
+						<break/>
+						<strong>POST can be used to send events as XML in POST body.
+							Postlet is obsolete since the v2.0.0 protocol
+							and thus PushletClient.java and JavaScript client lib
+							(p_publish) also support publishing.
+						</strong>
+
+					</item>
+					<item>event broadcast (send to all clients)
+						<break/>
+						<strong>Also New event "abort"
+							is also sent to all clients when webapp is unloaded.
+						</strong>
+
+					</item>
+					<item>event unicast (send to specific client)
+						<break/>
+						<strong>Done (in Dispatcher.java). Each client gets a unique string id
+							that can be used to send unicast events to that specific client.
+						</strong>
+
+					</item>
+				</list>
+
+			</section3>
+			<section3 title="Enhanced Pushlet Protocol">
+				<para>The following enhancements over v1.0.0 have been realized</para>
+				<list>
+					<item>merge pushlet, pullet and postlet protocols.
+						<break/>
+						<strong>Done. There is now a single Pushlet servlet
+							that can operate in three modes: "stream", "pull" and "poll".
+							and allows publishing.
+						</strong>
+					</item>
+					<item>multiple subscriptions (multiplexing) per pushlet session
+						<break/>
+						<strong>
+							Done. Also multiple subjects per subscription are supported.
+						</strong>
+					</item>
+					<item>dynamic subscription/unsubscription within pushlet session
+						<break/>
+						<strong>
+							Done.
+						</strong>
+					</item>
+
+
+					<item>possibly separate data and control connections
+						<break/>
+						<strong>
+							Done. Control is "out-of-band",
+							using a separate HTTP request/connecction while
+							data events are using another connection. This is similar to RTSP/RTP.
+						</strong>
+					</item>
+				</list>
+				<para>The protocol and Event structure has been completely revised.
+
+				</para>
+			</section3>
+			<section3 title="Browser/DHTML Enhancements">
+				<para>In particular Safari and Opera.
+					<break/>
+					<strong>Done. Pushlets work in both of these browsers. Safari only in "pull" mode.</strong>
+				</para>
+				<para>Enhance web-page integration (e.g. IFRAME).
+					<break/>
+					<strong>Done. Pushlets can be embedded by a
+						JavaScript call (p_embed()). This uses an IFRAME.
+						The development of DHTML will be significantly easier
+						through the use of a Pushlet JS library. See
+						the
+						<link href="http://pushlets.cvs.sourceforge.net/pushlets/pushlets/webapps/pushlet/lib/">
+							JavaScript
+							libraries (CVS). No wait-cursor is shown in most browsers.
+						</link>
+					</strong>
+
+				</para>
+			</section3>
+			<section3 title="Configuration">
+				<para>Enable configuration of Pushlet protocol parameters
+					<break/>
+					<strong>Done.
+						<code>pushlet.properties</code>
+						can be used
+						to set various parameters like timings or even enforce the
+						entire server to run in
+						<code>pull</code>
+						mode.
+					</strong>
+
+				</para>
+			</section3>
+			<section3 title="AJAX (XMLHttpRequest) Support">
+				<para>
+					There is a lot of buzz on AJAX and in particular
+					<link href="http://www.xml.com/pub/a/2005/02/09/xml-http-request.html">
+						XMLHttpRequest</link>, a browser DHTML (DOM) feature
+					that allows asynchronous XML RPC calls. Example applications
+					are
+					<link href="http://www.google.com/webhp?complete=1&amp;hl=en">Google Suggest</link>.
+
+					Here is
+					<link href="http://adaptivepath.com/publications/essays/archives/000385.php">
+						an introductory article on AJAX (worthwhile read).
+					</link>
+				</para>
+				<para>
+					Pushlets have similar characteristics as XMLHttpRequest like asynchronous
+					messaging.
+					There could be an ideal marriage between the two technologies:
+					XMLHttpRequest could be used as the front-end library to the back-end
+					Pushlet server.
+					On the client-side, the JavaScript library (js-pushlet-client.js)
+					could be altered to use XMLHttpRequest i.s.o. hidden IFRAME/FRAMES.
+					Advantages are clear:
+					<list>
+						<item>cleaner and thinner client-side lib</item>
+						<item>no issues with "busy" indicators</item>
+						<item>pure XML data exchange (i.s.o. JavaScript callbacks)</item>
+					</list>
+
+					A first investigation learned that this approach is viable and that no server-side changes
+					are required. There are some specific issues though:
+					<list>
+						<item>no universal support for XMLHttpRequest on all browsers (can be emulated in various ways
+							though)
+						</item>
+						<item>event streaming can only be emulated in Mozilla (using readystate == 3 and accessing
+							partly received content)
+						</item>
+						<item>from this follows that only pull-mode can be conducted</item>
+					</list>
+				</para>
+				<para>
+					<strong>Done. Since version 2.0.2 Pushlets support AJAX in "pull"-mode with format="xml-strict".
+						An AJAX JS client library (ajax-pushlet-client.js) is available.
+					</strong>
+				</para>
+			</section3>
+			<section3 title="Additional Client Types">
+				<para>J2ME clients.
+					<break/>
+					<strong>
+						Done. Pushlets have been used in a J2ME app on a Nokia 6600 in the
+						<link href="http://www.geoskating.com">GeoSkating project</link>. See
+						<code>client/j2me</code>
+						in the distro.
+					</strong>
+
+
+				</para>
+			</section3>
+		</section2>
+	</content>
+</page>

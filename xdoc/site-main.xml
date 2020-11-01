@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page SYSTEM "nl/justobjects/xbook/rsc/dtd/page.dtd" >
+<page>
+	<info>
+		<title>Pushlets</title>
+		<id>$Id: site-main.xml,v 1.22 2010/02/05 13:24:22 justb Exp $</id>
+		<author>
+			<name>Just van den Broecke</name>
+			<email>just[AT]justobjects.nl</email>
+		</author>
+		<date>24.nov.2007</date>
+	</info>
+	<content>
+		<para>
+			This site is dedicated to Pushlets, an Free and Open Source
+			(LGPL) HTTP-based publish/subscribe framework, now even AJAX enabled.
+			Read
+			<link href="doc/whitepaper.html">this whitepaper</link>
+			to
+			get a first idea of the why, what and how and
+			<link href="/pushlet/examples/pushlet.html">try out the Pushlet demos</link>. A full DHTML publish/subscribe
+			example is the
+			<link href="/pushlet/examples/chat/enter.html">Chat demo</link>.
+
+			Additionally, you may want to read
+			my
+
+			<link href="http://www.javaworld.com/jw-03-2000/jw-03-pushlet.html" target="_new">JavaWorld article on
+				Pushlets</link>.
+		</para>
+		<para>
+			Many other references can be found on the web (e.g. try a search on "pushlets" on Google).
+			In print
+			<link href="http://www.amazon.com/Professional-JSP-Using-JavaServer-Servlets/dp/1861003625" target="_new">
+				"Professional JSP" (Wrox Press 1th ed.)</link> devotes text to Pushlets starting on page 610.
+		</para>
+		<para>
+			More and more <link href="doc/applications.html">Pushlets find their way into applications</link>.
+		</para>
+		<section1 title="What's New ?">
+			<section3 title="5-feb-2010: v2.0.4 released"/>
+			<para>
+				Yes it has been a while ! Mainly some bugfixes and logging (log4j support) enhancements.
+				Download is available from
+				<link href="https://sourceforge.net/projects/pushlets/files">
+					SourceForge
+				</link>
+				See also the <link href="doc/version.html">release notes</link>.
+			</para>
+			<section3 title="24-nov-2007: v2.0.3 released"/>
+			<para>
+				Various bugfixes and hooks for declarative extensibility.
+				Download is available from
+				<link href="http://sourceforge.net/project/showfiles.php?group_id=62939">
+					SourceForge
+				</link>
+				See also the <link href="doc/version.html">release notes</link>.
+			</para>
+			<section3 title="25-may-2006: v2.0.2 released"/>
+			<para>
+				Most important change is the addition of an <link href="/pushlet/lib/ajax-pushlet-client.js">AJAX
+				JavaScript client</link>.
+				Download is available from <link href="http://sourceforge.net/project/showfiles.php?group_id=62939">
+				SourceForge</link>.
+				See also the <link href="doc/version.html">release notes</link>.
+			</para>
+			<section3 title="9-may-2006: AJAX client library"/>
+			<para>
+				A first version of a
+				<link href="/pushlet/lib/ajax-pushlet-client.js">Pushlet AJAX client library</link>
+				is available.
+				Some of the examples like the
+				<link href="/pushlet/examples/chat/enter.html">Chat demo</link>
+				are already using this AJAX client.
+				For several reasons it may be more optimal to use the AJAX library. The AJAX client library is used
+				extensively in my
+				<link href="http://www.geotracing.com" target="_new">GeoTracing projects</link>
+				for real-time GPS tracking on a Google Map.
+			</para>
+			<section3 title="2-mar-2005: v2.0.0 available"/>
+			<para>
+				You can now
+				<link href="http://sourceforge.net/project/showfiles.php?group_id=62939" target="_top">download v2.0.0
+					from SourceForge
+				</link>
+
+			</para>
+
+			<section3 title="18-feb-2005: v2 upcoming"/>
+			<para>
+				The examples on this site now run a preview of v2.0.0.
+				You may want to
+				<link href="http://www.justobjects.org/download/pushlet">download preview versions.</link>
+			</para>
+			<section3 title="24-september-2004: status page added"/>
+			<para>As v2.0.0 is under development, following the
+				<link href="doc/roadmap.html">RoadMap document</link>, I have added
+				a <link href="doc/roadmap.html">Status document</link>.
+			</para>
+			<section3 title="16-november-2003: applications page added"/>
+			<para>Started
+				<link href="doc/applications.html">compiling a list of applications.</link>
+			</para>
+			<section3 title="18-august-2003: v1.0.0 released"/>
+			<para>Finally it has happened. This site reflects v1.0.0.</para>
+			<section3 title="18-may-2003: XML Streams"/>
+			<para>The upcoming v1.0.0 supports XML encoded Events.</para>
+			<section3 title="1-may-2003: Revised DHTML"/>
+			<para>Working towards version 1.0.0, I completely redid the DHTML implementation. The examples should now
+				work for most browsers (but one never knows!).
+				Also the webpresentation teacher/student example is fixed
+			</para>
+			<section3 title="20-sep-2002: Pushlet development moved to SourceForge"/>
+			<para>See
+				<link href="http://sourceforge.net/projects/pushlets/" target="_top">sourceforge.net/projects/pushlets
+				</link>
+			</para>
+			<section3 title="6-aug-2002: Pushlets now running on Apache/Tomcat"/>
+			<section3 title="5-aug-2002: Redesign of this site using XBook"/>
+			<section3 title="29-jul-2002: Pushlet v0.0.7 available (see download)"/>
+			<section3 title="14-feb-2002: Pushlet v0.0.6 .war update available! (see download)"/>
+			<section3 title="10-mar-2002: Now running on a new server and domain: www.pushlets.com"/>
+		</section1>
+
+		<section1 title="Discussion">
+			<para>
+				During jan-may 2000 this server has welcomed 1000s of unique visitors and about 100s of downloads.
+				I've gotten many positive responses, both from gurus in the DHTML world (Dan Steinman and Danny Goodman)
+				and the servlet world (Jason Hunter).
+				But I am also wondering what your opinion is and if
+				the you are able to get Pushlets working in various servlet engines.
+			</para>
+			<para>
+				I've set up a Pushlet discussion list at YahooGroups, so that your opinions can be shared.
+				I will forward some of the private email responses I've gotten to that list.
+				<link href="doc/discussion.html">Click here</link>
+				to go to the discussion page.
+			</para>
+			<xhtml>
+				<A href="http://sourceforge.net" target="_top">
+					<IMG src="http://sourceforge.net/sflogo.php?group_id=62939&amp;type=5" width="210" height="62"
+					     border="0" alt="SourceForge Logo"/>
+				</A>
+				<!-- Begin Nedstat Basic code -->
+				<a href="http://v1.nedstatbasic.net/stats?AAwUcQr4Pd/OY5BONSr9MgXOSK5A" target="_new">
+					<img src="http://m1.nedstatbasic.net/n?id=AAwUcQr4Pd/OY5BONSr9MgXOSK5A" border="0" width="10"
+					     height="10"/>
+				</a>
+				<!-- End Nedstat Basic code -->
+			</xhtml>
+
+		</section1>
+
+	</content>
+</page>
+
+
+
+
+
